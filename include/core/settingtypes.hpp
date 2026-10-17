@@ -1,0 +1,14 @@
+#pragma once
+#include <string>
+#include "core/smath.hpp"
+
+struct ProgInfo {
+    std::string version;
+    std::string author;
+    std::string started_on;
+};
+
+struct WindowSettings {
+    std::string title;
+    Vec2 resolution;
+};

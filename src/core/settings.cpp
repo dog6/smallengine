@@ -1,0 +1,85 @@
+#include <iostream>
+#include <toml++/toml.hpp>
+#include "core/settings.hpp"
+#include <filesystem>
+#include <string>
+#include <spdlog/spdlog.h>
+
+int Settings::ReadSettings()
+{
+    spdlog::info("Trying to read 'settings.toml' file..");
+
+    try {
+
+        // 1. Get the current working directory as a native path object
+        std::filesystem::path wd = std::filesystem::current_path();
+        spdlog::info("Current Working Directory: {}", wd.string());
+
+        // 2. Safely append the filename using the path separator operator (/)
+        std::filesystem::path settings_path = wd / "/build/bin/settings.toml";
+
+        // 3. Pass the path directly to toml::parse_file
+        toml::table tbl = toml::parse_file("settings.toml");
+
+        // 1. Read Program Info (Allocated safely on the stack)
+        ProgInfo pi;
+        pi.version    = tbl["metadata"]["version"].value_or<std::string>("INDEV");
+        pi.author     = tbl["metadata"]["author"].value_or<std::string>("Benjamin Smallarz");
+        pi.started_on = tbl["metadata"]["started_on"].value_or<std::string>("2026-10-26");
+
+        // 2. Read Window Settings (Allocated safely on the stack)
+        WindowSettings ws;
+        ws.title        = tbl["window"]["title"].value_or<std::string>("SmallEngine");
+        ws.resolution.x = tbl["window"]["resolution"]["x"].value_or<int>(1280);
+        ws.resolution.y = tbl["window"]["resolution"]["y"].value_or<int>(720);
+
+        // 3. Set static settings objects (Passes copies or references safely)
+        Settings::SetWindowSettings(ws);
+        Settings::SetProgInfo(pi);
+
+    } 
+    catch (const toml::parse_error& err) {
+        spdlog::error("Failed to parse 'settings.toml': {} at ({}, {})", 
+                      err.description(), 
+                      err.source().begin.line, 
+                      err.source().begin.column);
+
+        
+        // 1. Read Program Info (Allocated safely on the stack)
+        ProgInfo pi;
+        pi.version    = "INDEV";
+        pi.author     = "Benjamin Smallarz";
+        pi.started_on = "10-16-2026";
+
+        // 2. Read Window Settings (Allocated safely on the stack)
+        WindowSettings ws;
+        ws.title        = "SmallEngine";
+        ws.resolution.x = 1280;
+        ws.resolution.y = 720;
+
+        // 3. Set static settings objects (Passes copies or references safely)
+        Settings::SetWindowSettings(ws);
+        Settings::SetProgInfo(pi);
+
+        return -2;
+    }
+
+    spdlog::info("Successfully read 'settings.toml' file");
+    return 0;
+}
+
+int Settings::SetWindowSettings(const WindowSettings &ws) { 
+    if (&ws == nullptr) return -1;
+    Settings::window = ws;
+    return 0;
+}
+
+struct WindowSettings *Settings::GetWindowSettings() { return &Settings::window; }
+
+int Settings::SetProgInfo(const ProgInfo &pi) { 
+    if (&pi == nullptr) return -1;
+    Settings::proginfo = pi;
+    return 0;
+}
+
+struct ProgInfo *Settings::GetProgInfo() { return &Settings::proginfo; }
