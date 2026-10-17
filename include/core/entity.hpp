@@ -12,20 +12,15 @@ namespace sg::Core {
 
         private:
         
-            sf::Transform transform;
             sf::Drawable* drawable;
 
         public:
-
 
             Entity();
             ~Entity();
 
             void SetDrawable(sf::Drawable& _drawable);
             sf::Drawable& GetDrawable();
-
-            // No SetTransform since Transform is set in the Entity constructor;
-            sf::Transform* GetTransform();
 
     };
 

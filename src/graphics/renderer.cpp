@@ -3,6 +3,8 @@
 
 using namespace sg::Graphics;
 
+// Renderer will need to implement some kind of sf::View
+
 int Renderer::AddDrawable(sf::Drawable *drawable) { 
     if (drawable == nullptr) return -1;
 
@@ -20,10 +22,12 @@ int Renderer::RemoveDrawable(sf::Drawable *drawable) {
     return -1;
 }
 
+
 void Renderer::Render(sf::RenderWindow *window)
 {
-
     if (window == nullptr) return; // cannot draw to null window
+
+    window->clear(sf::Color::Black);
 
     // draw each drawable
     for (int i = 0; i < this->drawables.size(); i++){
@@ -33,4 +37,5 @@ void Renderer::Render(sf::RenderWindow *window)
 
     }
 
+    window->display();
 }

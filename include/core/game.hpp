@@ -22,6 +22,9 @@ namespace sg {
             // Called after game initializes
             void Load();
 
+            // Called each frame before render takes place
+            void Update();
+
         public:
 
             // Default constructors

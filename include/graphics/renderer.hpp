@@ -8,8 +8,6 @@
 
 using namespace std;
 
-// using namespace sg::Core;
-
 // SFML renderer
 
 namespace sg::Graphics {
