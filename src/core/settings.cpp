@@ -30,8 +30,10 @@ int Settings::ReadSettings()
         // 2. Read Window Settings (Allocated safely on the stack)
         WindowSettings ws;
         ws.title        = tbl["window"]["title"].value_or<std::string>("SmallEngine");
-        ws.resolution.x = tbl["window"]["resolution"]["x"].value_or<int>(1280);
-        ws.resolution.y = tbl["window"]["resolution"]["y"].value_or<int>(720);
+        ws.resolution.x = tbl["window"]["resolution"]["x"].value_or<unsigned int>(1280);
+        ws.resolution.y = tbl["window"]["resolution"]["y"].value_or<unsigned int>(720);
+        ws.max_framerate = tbl["window"]["max_framerate"].value_or<int>(60);
+
 
         // 3. Set static settings objects (Passes copies or references safely)
         Settings::SetWindowSettings(ws);
@@ -56,6 +58,7 @@ int Settings::ReadSettings()
         ws.title        = "SmallEngine";
         ws.resolution.x = 1280;
         ws.resolution.y = 720;
+        ws.max_framerate = 60;
 
         // 3. Set static settings objects (Passes copies or references safely)
         Settings::SetWindowSettings(ws);

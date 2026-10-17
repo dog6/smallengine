@@ -1,17 +1,23 @@
 #pragma once
 
 
-struct Vec2 {
+struct vec2 {
     int x;
     int y;
-    Vec2();
-    Vec2(int _x, int _y);
+    vec2();
+    vec2(int _x, int _y);
 };
 
+struct uvec2 {
+    unsigned int x;
+    unsigned int y;
+    uvec2();
+    uvec2(unsigned int _x, unsigned int _y);
+};
 
-struct Vec2f {
+struct vec2f {
     float x;
     float y;
-    Vec2f();
-    Vec2f(float _x, float _y);
+    vec2f();
+    vec2f(float _x, float _y);
 };

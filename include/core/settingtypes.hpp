@@ -10,5 +10,6 @@ struct ProgInfo {
 
 struct WindowSettings {
     std::string title;
-    Vec2 resolution;
+    uvec2 resolution;
+    int max_framerate;
 };
