@@ -1,6 +1,8 @@
 #pragma once
 
 
+namespace sg::Core {
+
 struct vec2 {
     int x;
     int y;
@@ -21,3 +23,5 @@ struct vec2f {
     vec2f();
     vec2f(float _x, float _y);
 };
+
+}

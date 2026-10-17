@@ -1,5 +1,6 @@
-// #include  "core/smath.hpp"
 #include "core/smath.hpp"
+
+using namespace sg::Core;
 
 vec2f::vec2f()
 {

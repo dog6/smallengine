@@ -1,12 +1,15 @@
 #include "core/game.hpp"
 
-
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h> // For colored console output
 
+using namespace sg;
+using namespace sg::Core;
 
+// helper function to setup spdlog sinks
 void setup_spdlog(){
+
     // 1. Create the console sink (with color support)
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::info);
@@ -24,20 +27,19 @@ void setup_spdlog(){
     // Register it globally and set the default pointer
     spdlog::register_logger(multi_logger);
     spdlog::set_default_logger(multi_logger);
+
 }
 
-// void sfml_demo(const WindowSettings& ws) {
-    // Create a green rectangle shape
-    // sf::RectangleShape shape(sf::Vector2f(100.0f, 100.0f));
-    // shape.setFillColor(sf::Color::Green);
-    // shape.setPosition({350.0f, 250.0f}); // Center of an 800x600 window
-// }
+
+Game::Game()
+{
+    this->renderer = Graphics::Renderer();
+}
 
 void Game::Run()
 {
-
     spdlog::info("Starting game loop..");
-    
+
     long long unsigned int frameNumber = 0;
 
     // Main application loop
@@ -58,7 +60,7 @@ void Game::Run()
         this->gameWindow.clear(sf::Color::Black);
 
         // Draw the shape to the back buffer
-        // this->gameWindow.draw(shape);
+        this->renderer.Render(&this->gameWindow);
 
         // Display the back buffer contents on screen
         this->gameWindow.display();
@@ -66,6 +68,7 @@ void Game::Run()
     }
 }
 
+// Read 'settings.toml', calls Load()
 void Game::Init()
 {
     spdlog::info("Initializing game..");
@@ -82,6 +85,7 @@ void Game::Init()
 
 }
 
+// Creates gameWindow, calls Run()
 void Game::Load()
 {
     spdlog::info("Game loading..");
@@ -92,9 +96,16 @@ void Game::Load()
 
     spdlog::info("Game finished loading!");
 
+    // load shape
+    auto circle = sf::CircleShape(5);
+    circle.setFillColor(sf::Color(0, 160, 240));
+    circle.setPosition(sf::Vector2f(50, 50));
+    this->renderer.AddDrawable(&circle);
+
     this->Run();
 }
 
+// Called on first game loop
 void Game::Start()
 {
     spdlog::info("Started game loop!");

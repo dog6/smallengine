@@ -5,6 +5,9 @@
 #include <string>
 #include <spdlog/spdlog.h>
 
+using namespace sg::Core;
+
+// Read settings from 'settings.toml' file, or use default hard-coded values
 int Settings::ReadSettings()
 {
     spdlog::info("Trying to read 'settings.toml' file..");
@@ -71,18 +74,21 @@ int Settings::ReadSettings()
     return 0;
 }
 
+
+// Window Settings
 int Settings::SetWindowSettings(const WindowSettings &ws) { 
     if (&ws == nullptr) return -1;
     Settings::window = ws;
     return 0;
 }
 
-struct WindowSettings *Settings::GetWindowSettings() { return &Settings::window; }
+struct WindowSettings* Settings::GetWindowSettings() { return &Settings::window; }
 
+// Program Info
 int Settings::SetProgInfo(const ProgInfo &pi) { 
     if (&pi == nullptr) return -1;
     Settings::proginfo = pi;
     return 0;
 }
 
-struct ProgInfo *Settings::GetProgInfo() { return &Settings::proginfo; }
+struct ProgInfo* Settings::GetProgInfo() { return &Settings::proginfo; }
