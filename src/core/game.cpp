@@ -91,12 +91,13 @@ std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pos, sf
     auto e = std::make_unique<Entity>("Box");
     auto rect = std::make_unique<sf::RectangleShape>(size);
     rect->setFillColor(col);
-    rect->setOrigin(size * 0.5f);
+    // rect->setOrigin(size * 0.5f);
     rect->setPosition(pos);
     e->AddComponent<DrawableComponent>(std::move(rect));
 
     // Create and add PhysicsComponent
-    b2Polygon box_polygon = b2MakeBox(size.x/2, size.y/2);
+    b2Vec2 b2size = toBox2D(size);
+    b2Polygon box_polygon = b2MakeBox(b2size.x*0.5f, b2size.y*0.5f);
     e->AddComponent<PhysicsComponent>(isStatic, toBox2D(pos), worldId, box_polygon);
     
     return e;
