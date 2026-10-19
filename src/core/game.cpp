@@ -8,7 +8,7 @@
 #include "core/components/physics_component.hpp"
 #include <box2d/box2d.h>
 #include "core/box2dworld.hpp"
-#include "core/box2sf.hpp"
+#include "core/b2sf.hpp"
 
 using namespace sg;
 using namespace sg::Core;
@@ -85,21 +85,25 @@ void Game::Init()
 
 }
 
-std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pos, sf::Vector2f size, sf::Color col, bool isStatic) {
+std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pixel_pos,
+                                sf::Vector2f pixel_size, sf::Color col, bool isStatic)
+                                {
     
-    // Create and add DrawableComponent
+    // Create new unique_ptr<Entity>
     auto e = std::make_unique<Entity>("Box");
-    auto rect = std::make_unique<sf::RectangleShape>(size);
-    rect->setFillColor(col);
-    // rect->setOrigin(size * 0.5f);
-    rect->setPosition(pos);
-    e->AddComponent<DrawableComponent>(std::move(rect));
 
     // Create and add PhysicsComponent
-    b2Vec2 b2size = toBox2D(size);
+    b2Vec2 b2size = pixelsToMeters(pixel_size);
     b2Polygon box_polygon = b2MakeBox(b2size.x*0.5f, b2size.y*0.5f);
-    e->AddComponent<PhysicsComponent>(isStatic, toBox2D(pos), worldId, box_polygon);
+    e->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, box_polygon);
     
+    // Create and add DrawableComponent
+    auto rect = std::make_unique<sf::RectangleShape>(pixel_size);
+    rect->setFillColor(col);
+    rect->setOrigin(pixel_size*0.5f);
+    rect->setPosition(pixel_pos);
+    e->AddComponent<DrawableComponent>(std::move(rect));
+
     return e;
 }
 
@@ -113,12 +117,12 @@ void Game::Load()
     this->gameWindow = sf::RenderWindow(sf::VideoMode({ws->resolution.x, ws->resolution.y}), ws->title);
     this->gameWindow.setFramerateLimit(ws->max_framerate); // Limit frame rate
 
-    
-
     // Load dynamic box
-    sf::Vector2f e_size = sf::Vector2f(50, 50);
-    sf::Vector2f e_pos = sf::Vector2f(500, 150);
-    entman.Add(CreateRectEntity(this->gameWorld.worldId, e_pos, e_size, sf::Color{255,80,140}, false));
+    for (int i = 0; i < 3; i++){
+        sf::Vector2f e_size = sf::Vector2f(50, 50);
+        sf::Vector2f e_pos = sf::Vector2f(500, 50*i);
+        entman.Add(CreateRectEntity(this->gameWorld.worldId, e_pos, e_size, sf::Color{255,80,140}, false));
+    }
 
     // Load ground
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);

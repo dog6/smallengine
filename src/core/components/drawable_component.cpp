@@ -2,7 +2,7 @@
 #include "core/components/physics_component.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include "core/entity.hpp"
-#include "core/box2sf.hpp"
+#include "core/b2sf.hpp"
 
 using namespace sg::Core;
 
@@ -23,6 +23,6 @@ void DrawableComponent::Update(Entity& owner)
 
     b2Vec2 p = b2Body_GetPosition(id);
     b2Rot  r = b2Body_GetRotation(id);
-    transformable->setPosition(toSFML(p));
+    transformable->setPosition(metersToPixels(p));
     transformable->setRotation(sf::radians(b2Rot_GetAngle(r)));
 }
