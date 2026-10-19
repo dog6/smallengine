@@ -1,5 +1,5 @@
 #pragma once
-#include "settingtypes.hpp"
+#include "core/setting_types.hpp"
 
 namespace sg::Core {
 

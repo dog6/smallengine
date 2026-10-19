@@ -16,6 +16,7 @@ namespace sg {
             Graphics::Renderer renderer;
             List<sg::ECS::Entity> entman;
             sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
+            inline static Game* Instance = nullptr;
 
             // Called every frame
             void Run(); // game loop
@@ -34,6 +35,8 @@ namespace sg {
             // Default constructors
             Game();
             ~Game() {}
+
+            static Game* GetInstance() { return Game::Instance; }
 
             // Called first
             void Init();

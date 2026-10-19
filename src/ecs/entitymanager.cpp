@@ -1,4 +1,4 @@
-#include "ecs/entitymanager.hpp"
+#include "ecs/entity_manager.hpp"
 #include "ecs/entity.hpp"
 
 #include <algorithm>

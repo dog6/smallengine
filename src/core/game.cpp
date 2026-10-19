@@ -20,6 +20,7 @@ using namespace sg::ECS::Components;
 Game::Game()
 {
     this->renderer = Graphics::Renderer();
+    Game::Instance = this;
 }
 
 void Game::Run()
@@ -49,21 +50,28 @@ void Game::Run()
 // Read 'settings.toml', calls Load()
 void Game::Init()
 {
+    // Setup file & console logging w/ spdlog
+    Logger::SetupDefaultSinks(); 
+
     spdlog::info("Initializing game..");
-    // setup_spdlog();
-    Logger::SetupDefaultSinks();
 
     // Read settings
     Settings::ReadSettings();
     ProgInfo* pi = Settings::GetProgInfo();
     spdlog::info("Printing settings..\nVersion: {}\nStarted on: {}\nAuthor: {}\n", pi->version, pi->started_on, pi->author);
 
+    // Create list to store entitites
     entman = List<Entity>();
+
+
     spdlog::info("Game finished initializing!");
-    
 
     this->Load();
 }
+
+// Avoid complexity
+// Next draw circle
+// We need somewhere to store CreateRectEntity(), and ideally change it to be more generic
 
 std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pixel_pos,
                                 sf::Vector2f pixel_size, sf::Color col, bool isStatic)
@@ -97,6 +105,8 @@ void Game::Load()
     this->gameWindow = sf::RenderWindow(sf::VideoMode({ws->resolution.x, ws->resolution.y}), ws->title);
     this->gameWindow.setFramerateLimit(ws->max_framerate); // Limit frame rate
 
+    // TEMP CODE
+
     // Load dynamic box
     for (int i = 0; i < 3; i++){
         sf::Vector2f e_size = sf::Vector2f(50, 50);
@@ -108,6 +118,8 @@ void Game::Load()
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
     sf::Vector2f ground_pos = sf::Vector2f(0.0f, static_cast<float>(ws->resolution.y)-32);
     entman.Add(CreateRectEntity(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
+
+    // END OF TEMP CODE
 
     spdlog::info("Game finished loading!");
     this->Run();
