@@ -3,11 +3,10 @@
 #include <memory>
 #include <string>
 #include <typeindex>
-#include <utility>
 #include <vector>
-#include "core/component.hpp"
+#include "ecs/component.hpp"
 
-namespace sg::Core {
+namespace sg::ECS {
 
 class Entity {
 public:
@@ -61,7 +60,7 @@ public:
 
 private:
     std::string name;
-    std::vector<std::pair<std::type_index, std::unique_ptr<Component>>> components;
+    std::vector<std::pair<std::type_index, std::unique_ptr<sg::ECS::Component>>> components;
 };
 
 } // namespace sg::Core

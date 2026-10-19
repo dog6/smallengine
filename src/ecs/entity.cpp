@@ -1,6 +1,6 @@
-#include "core/entity.hpp"
+#include "ecs/entity.hpp"
 
-using namespace sg::Core;
+using namespace sg::ECS;
 
 Entity::Entity(std::string n) : name(std::move(n)) {}
 Entity::~Entity() = default;

@@ -3,15 +3,19 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h> // For colored console output
-#include "core/entity.hpp"
-#include "core/components/drawable_component.hpp"
-#include "core/components/physics_component.hpp"
+#include "ecs/entity.hpp"
+#include "ecs/components/drawable_component.hpp"
+#include "ecs/components/physics_component.hpp"
 #include <box2d/box2d.h>
-#include "core/box2dworld.hpp"
+#include "physics/box2dworld.hpp"
 #include "core/b2sf.hpp"
 
 using namespace sg;
 using namespace sg::Core;
+using namespace sg::Physics;
+using namespace sg::ECS;
+using namespace sg::ECS::Components;
+
 
 // helper function to setup spdlog sinks
 void setup_spdlog(){

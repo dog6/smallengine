@@ -1,8 +1,8 @@
-#include "core/physicsbody.hpp"
+#include "physics/physicsbody.hpp"
 
 #include <spdlog/spdlog.h>
 
-using namespace sg::Core;
+using namespace sg::Physics;
 
 PhysicsBody::PhysicsBody(bool isStatic, b2Vec2 pos, b2WorldId worldId, b2Polygon polygon)
 {

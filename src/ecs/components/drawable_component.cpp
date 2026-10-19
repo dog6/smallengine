@@ -1,9 +1,10 @@
-#include "core/components/drawable_component.hpp"
-#include "core/components/physics_component.hpp"
+#include "ecs/components/drawable_component.hpp"
+#include "ecs/components/physics_component.hpp"
 #include <SFML/Graphics/Drawable.hpp>
-#include "core/entity.hpp"
+#include "ecs/entity.hpp"
 #include "core/b2sf.hpp"
 
+using namespace sg::ECS::Components;
 using namespace sg::Core;
 
 DrawableComponent::DrawableComponent(std::unique_ptr<sf::Drawable> d) : drawable(std::move(d)) {

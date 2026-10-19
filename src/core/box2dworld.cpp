@@ -1,4 +1,4 @@
-#include "core/box2dworld.hpp"
+#include "physics/box2dworld.hpp"
 
 
 // b2CreateWorld using b2DefaultWorldDef

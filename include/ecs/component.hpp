@@ -1,6 +1,6 @@
 #pragma once
 
-namespace sg::Core {
+namespace sg::ECS {
 
 class Entity;
 

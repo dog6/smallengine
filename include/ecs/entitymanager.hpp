@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include "core/entity.hpp"
+#include "ecs/entity.hpp"
 
-namespace sg::Core {
+namespace sg::ECS {
 
     constexpr size_t MAX_ENTITY_COUNT = 100;
 

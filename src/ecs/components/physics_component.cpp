@@ -1,12 +1,13 @@
-#include "core/components/physics_component.hpp"
+#include "ecs/components/physics_component.hpp"
 #include "box2d/box2d.h"
 
-using namespace sg::Core;
+using namespace sg::ECS::Components;
+using namespace sg::Physics;
 
 PhysicsComponent::PhysicsComponent(std::unique_ptr<PhysicsBody> b)
     : body(std::move(b)) {}
 
-void sg::Core::PhysicsComponent::Update()
+void PhysicsComponent::Update()
 {
 
 

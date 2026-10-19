@@ -3,7 +3,7 @@
 // Describes a Box2D physics body that can be linked to an entity
 #include <box2d/box2d.h>
 
-namespace sg::Core {
+namespace sg::Physics {
 
     class PhysicsBody {
 

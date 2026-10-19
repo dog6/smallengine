@@ -1,6 +1,6 @@
 #include "graphics/renderer.hpp"
-#include "core/components/drawable_component.hpp"
-#include "core/components/physics_component.hpp"
+#include "ecs/components/drawable_component.hpp"
+#include "ecs/components/physics_component.hpp"
 #include "core/b2sf.hpp"
 #include <spdlog/spdlog.h>
 
@@ -8,14 +8,14 @@ using namespace sg::Graphics;
 using namespace sg::Core;
 // Renderer will need to implement some kind of sf::View
 
-void sg::Graphics::Renderer::RenderEntitites(sf::RenderWindow *window, const std::vector<std::unique_ptr<sg::Core::Entity>> &ents)
+void sg::Graphics::Renderer::RenderEntitites(sf::RenderWindow *window, const std::vector<std::unique_ptr<sg::ECS::Entity>> &ents)
 {
 
     for (const auto& e : ents) {
         if (!e) continue;
 
         // Get sg::Core::DrawableComponent from Entity
-        auto* drawableComp = e->GetComponent<sg::Core::DrawableComponent>();
+        auto* drawableComp = e->GetComponent<sg::ECS::Components::DrawableComponent>();
         if (drawableComp == nullptr) continue;
 
         // Get sf::Drawable from DrawableComponent
@@ -23,7 +23,7 @@ void sg::Graphics::Renderer::RenderEntitites(sf::RenderWindow *window, const std
         if (d == nullptr) continue;
 
         // Sync PhysicsComponent (Box2D) position/rotation with DrawableComponent (SFML) position/rotation
-        if (auto* physComp = e->GetComponent<sg::Core::PhysicsComponent>()) {
+        if (auto* physComp = e->GetComponent<sg::ECS::Components::PhysicsComponent>()) {
             if (auto* tf = drawableComp->GetTransformable()) {
                 b2BodyId bid = physComp->GetBody().GetBodyId();
                 tf->setPosition(metersToPixels(b2Body_GetPosition(bid)));
@@ -38,7 +38,7 @@ void sg::Graphics::Renderer::RenderEntitites(sf::RenderWindow *window, const std
 }
 
 void Renderer::Render(sf::RenderWindow *window,
-                      const std::vector<std::unique_ptr<sg::Core::Entity>> &ents)
+                      const std::vector<std::unique_ptr<sg::ECS::Entity>> &ents)
 {
     if (window == nullptr) {
         spdlog::error("Cannot draw to null window");

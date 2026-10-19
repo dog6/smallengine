@@ -1,10 +1,10 @@
 #pragma once
 
 #include <memory>
-#include "core/component.hpp"
+#include "ecs/component.hpp"
 #include <SFML/Graphics.hpp>
 
-namespace sg::Core {
+namespace sg::ECS::Components {
 
     class DrawableComponent : public Component {
     public:

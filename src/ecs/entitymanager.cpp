@@ -1,11 +1,11 @@
-#include "core/entitymanager.hpp"
-#include "core/entity.hpp"
+#include "ecs/entitymanager.hpp"
+#include "ecs/entity.hpp"
 
 #include <algorithm>
 #include <memory>
 #include <spdlog/spdlog.h>
 
-using namespace sg::Core;
+using namespace sg::ECS;
 
 EntityManager::EntityManager()
 {
