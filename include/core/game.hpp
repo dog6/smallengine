@@ -15,7 +15,7 @@ namespace sg {
             sf::RenderWindow gameWindow;
             Graphics::Renderer renderer;
             List<sg::ECS::Entity> entman;
-            Box2DWorld gameWorld = Box2DWorld(b2Vec2{0, 9.81f});
+            sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
 
             // Called every frame
             void Run(); // game loop
