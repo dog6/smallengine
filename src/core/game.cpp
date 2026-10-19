@@ -4,6 +4,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h> // For colored console output
 #include "core/entity.hpp"
+#include "core/components/drawable_component.hpp"
+#include "core/components/physics_component.hpp"
+#include <box2d/box2d.h>
+#include "core/box2dworld.hpp"
+#include "core/box2sf.hpp"
 
 using namespace sg;
 using namespace sg::Core;
@@ -53,7 +58,7 @@ void Game::Run()
         this->Update();
 
         // Draw all drawables added to renderer
-        this->renderer.Render(&this->gameWindow);
+        this->renderer.Render(&this->gameWindow, entman.GetAll());
 
  
         frameNumber++;
@@ -69,29 +74,32 @@ void Game::Init()
     // Read settings
     Settings::ReadSettings();
     ProgInfo* pi = Settings::GetProgInfo();
-    WindowSettings* ws = Settings::GetWindowSettings();
     spdlog::info("Printing settings..\nVersion: {}\nStarted on: {}\nAuthor: {}\n", pi->version, pi->started_on, pi->author);
 
+    entman = List<Entity>();
     spdlog::info("Game finished initializing!");
+    
+
     this->Load();
 
+
 }
 
-Entity ball = Entity();
-Entity padl = Entity();
-Entity padr = Entity();
-sf::Transformable* balltf;
-sf::Transformable* padltf;
-sf::Transformable* padrtf;
+std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pos, sf::Vector2f size, sf::Color col, bool isStatic) {
+    
+    // Create and add DrawableComponent
+    auto e = std::make_unique<Entity>("Box");
+    auto rect = std::make_unique<sf::RectangleShape>(size);
+    rect->setFillColor(col);
+    rect->setOrigin(size * 0.5f);
+    rect->setPosition(pos);
+    e->AddComponent<DrawableComponent>(std::move(rect));
 
-sf::Transform get_transform_from_drawable(sf::Drawable* drawable) {
-    sf::Transformable* tfable = dynamic_cast<sf::Transformable*>(drawable);
-    sf::Transform tf = tfable->getTransform();
-    return tf;
-}
-
-sf::Transformable* get_transformable_from_drawable(sf::Drawable* drawable) {
-    return dynamic_cast<sf::Transformable*>(drawable);
+    // Create and add PhysicsComponent
+    b2Polygon box_polygon = b2MakeBox(size.x/2, size.y/2);
+    e->AddComponent<PhysicsComponent>(isStatic, toBox2D(pos), worldId, box_polygon);
+    
+    return e;
 }
 
 // Creates gameWindow, calls Run()
@@ -105,75 +113,42 @@ void Game::Load()
     this->gameWindow.setFramerateLimit(ws->max_framerate); // Limit frame rate
 
     
-    // Load drawables
-    auto circle = sf::CircleShape(5);
-    circle.setFillColor(sf::Color(180, 180, 180));
-    circle.setPosition(sf::Vector2f(200, 50));
-    
-    auto paddle_L = sf::RectangleShape(sf::Vector2f{28, 300});
-    paddle_L.setFillColor(sf::Color(255,255,255));
-    paddle_L.setPosition(sf::Vector2f(80, 50));
-    
-    auto paddle_R = sf::RectangleShape(sf::Vector2f{28, 300});
-    paddle_R.setFillColor(sf::Color(255,255,255));
-    paddle_R.setPosition(sf::Vector2f(1172, 50));
-    
 
+    // Load dynamic box
+    sf::Vector2f e_size = sf::Vector2f(50, 50);
+    sf::Vector2f e_pos = sf::Vector2f(500, 150);
+    entman.Add(CreateRectEntity(this->gameWorld.worldId, e_pos, e_size, sf::Color{255,80,140}, false));
 
-    ball.SetDrawable(circle);
-    padl.SetDrawable(paddle_L);
-    padr.SetDrawable(paddle_R);
-
-    // Add to renderer
-    this->renderer.AddDrawable(&circle);
-    this->renderer.AddDrawable(&paddle_L);
-    this->renderer.AddDrawable(&paddle_R);
-
-    // Get transforms
-    balltf = get_transformable_from_drawable(&ball.GetDrawable());
-    padltf = get_transformable_from_drawable(&padl.GetDrawable());
-    padrtf = get_transformable_from_drawable(&padr.GetDrawable());
+    // Load ground
+    sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
+    sf::Vector2f ground_pos = sf::Vector2f(0.0f, static_cast<float>(ws->resolution.y)-32);
+    entman.Add(CreateRectEntity(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
 
     spdlog::info("Game finished loading!");
     this->Run();
+
 }
 
 // Called every frame before renderer is called
 void Game::Update()
 {
-    // Poll for window and input events
+    // Poll for window and input eventss
     while (const std::optional event = this->gameWindow.pollEvent()) {
         if (event->is<sf::Event::Closed>()) {
             this->gameWindow.close(); // Close the window
         }
     }
 
-    // listen for keyboard input
-    if (padltf != nullptr && padrtf != nullptr){
-        sf::Vector2f posl = padltf->getPosition();
-        sf::Vector2f posr = padrtf->getPosition();
-        
-        if (posl.y >= 0 && posl.y <= 360) {
+    entman.Update();
 
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S)) {
-                if (posl.y+1 <= 360) {
-                    padltf->setPosition(sf::Vector2f(posl.x, posl.y+1));
-                    padrtf->setPosition(sf::Vector2f(posr.x, posr.y+1));
-                }
-            }else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::W)) {
-                if (posl.y-1 >= 0) {
-                    padltf->setPosition(sf::Vector2f(posl.x, posl.y-1));
-                    padrtf->setPosition(sf::Vector2f(posr.x, posr.y-1));
-                }
-            }
+    auto b = entman.Get(1);
+    auto pb = b->GetComponent<PhysicsComponent>();
+    b2BodyId bid = pb->GetBody().GetBodyId();
+    b2Vec2 position = b2Body_GetPosition(bid);
+    b2Rot rotation = b2Body_GetRotation(bid);
+    printf("\r%s - %4.2f %4.2f %4.2f", b->GetName().c_str(), position.x, position.y, b2Rot_GetAngle(rotation));
 
-        }
-
-
-
-    }
-
-
+    b2World_Step(this->gameWorld.worldId, 1.0f/60.0f, 4);
 }
 
 // Called on first game loop

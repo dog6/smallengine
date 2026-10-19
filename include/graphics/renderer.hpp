@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "sfml/Graphics/Drawable.hpp"
-#include "sfml/Graphics/RenderWindow.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
+#include "core/entity.hpp"
 
 // Renders entities to the sf::RenderWindow (Game::gameWindow)
 
@@ -13,17 +13,9 @@ using namespace std;
 namespace sg::Graphics {
 
 class Renderer {
-
-    private:
-
-        std::vector<sf::Drawable*> drawables;
-
     public:
 
-        int AddDrawable(sf::Drawable* drawable);
-        int RemoveDrawable(sf::Drawable* drawable);
-
-        void Render(sf::RenderWindow* window);
+        void Render(sf::RenderWindow* window, const std::vector<std::unique_ptr<sg::Core::Entity>>& ents);
 
 };
 

@@ -1,0 +1,9 @@
+[metadata]
+version = "v0.0.1"
+author = "Benjamin Smallarz"
+started_on = "2026-10-16 EST"
+
+[window]
+title = "Pong"
+resolution = { x = 1280, y = 720 }
+max_framerate = 60

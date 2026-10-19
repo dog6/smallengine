@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include "core/settings.hpp"
 #include "graphics/renderer.hpp"
+#include "core/box2dworld.hpp"
+#include "core/list.hpp"
+#include "core/entity.hpp"
 
 namespace sg {
     class Game {
@@ -11,7 +14,8 @@ namespace sg {
             inline static Core::Settings settings;
             sf::RenderWindow gameWindow;
             Graphics::Renderer renderer;
-
+            List<sg::Core::Entity> entman;
+            Box2DWorld gameWorld = Box2DWorld(b2Vec2{0, 9.81f});
 
             // Called every frame
             void Run(); // game loop

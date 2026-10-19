@@ -1,40 +1,42 @@
 #include "graphics/renderer.hpp"
-#include <algorithm>
+#include "core/components/drawable_component.hpp"
+#include "core/components/physics_component.hpp"
+#include "core/box2sf.hpp"
+#include <spdlog/spdlog.h>
 
 using namespace sg::Graphics;
-
+using namespace sg::Core;
 // Renderer will need to implement some kind of sf::View
 
-int Renderer::AddDrawable(sf::Drawable *drawable) { 
-    if (drawable == nullptr) return -1;
 
-    this->drawables.push_back(drawable); 
-    return 0;
-}
-
-int Renderer::RemoveDrawable(sf::Drawable *drawable) {
-    auto it = std::find(this->drawables.begin(), this->drawables.end(), drawable);
-    
-    if (it != this->drawables.end()) {
-        this->drawables.erase(it);
-        return 0;
-    }
-    return -1;
-}
-
-
-void Renderer::Render(sf::RenderWindow *window)
+void Renderer::Render(sf::RenderWindow* window,
+                      const std::vector<std::unique_ptr<sg::Core::Entity>>& ents)
 {
-    if (window == nullptr) return; // cannot draw to null window
+    if (window == nullptr) {
+        spdlog::error("Cannot draw to null window");
+        return;
+    }
 
     window->clear(sf::Color::Black);
 
-    // draw each drawable
-    for (int i = 0; i < this->drawables.size(); i++){
-    
-        if (drawables[i] == nullptr) continue; // skip null drawables
-        window->draw(*drawables[i]); // draw drawable
+    for (const auto& e : ents) {
+        if (!e) continue;
 
+        auto* drawableComp = e->GetComponent<sg::Core::DrawableComponent>();
+        if (drawableComp == nullptr) continue;
+
+        sf::Drawable* d = drawableComp->GetDrawable();   // pointer version
+        if (d == nullptr) continue;
+
+        if (auto* physComp = e->GetComponent<sg::Core::PhysicsComponent>()) {
+            if (auto* tf = drawableComp->GetTransformable()) {
+                b2BodyId bid = physComp->GetBody().GetBodyId();
+                tf->setPosition(toSFML(b2Body_GetPosition(bid)));
+                tf->setRotation(sf::radians(b2Rot_GetAngle(b2Body_GetRotation(bid))));
+            }
+        }
+
+        window->draw(*d);
     }
 
     window->display();

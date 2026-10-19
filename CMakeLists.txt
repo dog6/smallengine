@@ -10,6 +10,15 @@ set(INCLUDE include/)
 file(GLOB_RECURSE INCLUDE_FILES ${INCLUDE}/*)
 
 include(FetchContent)
+FetchContent_Declare(BOX2D
+    GIT_REPOSITORY https://github.com/erincatto/box2d
+    GIT_TAG v3.1.1
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+    
+FetchContent_MakeAvailable(BOX2D)
+
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 3.1.0
@@ -37,12 +46,15 @@ FetchContent_Declare(SPDLOG
 
 FetchContent_MakeAvailable(SPDLOG)
 
+add_compile_definitions(SFML_NO_JOYSTICK)
+
 add_executable(smallgame ${SOURCE})
 
 target_include_directories(smallgame PRIVATE ${INCLUDE})
 target_compile_features(smallgame PRIVATE cxx_std_17)
 target_link_libraries(smallgame PRIVATE
     SFML::Graphics
+    box2d::box2d
     tomlplusplus::tomlplusplus
     spdlog::spdlog
 )

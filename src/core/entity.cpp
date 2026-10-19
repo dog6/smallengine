@@ -2,18 +2,12 @@
 
 using namespace sg::Core;
 
-Entity::Entity()
+Entity::Entity(std::string n) : name(std::move(n)) {}
+Entity::~Entity() = default;
+
+void Entity::Update()
 {
-    this->drawable = nullptr;
+    for (auto& [type, c] : components) {
+        c->Update(*this);
+    }
 }
-
-Entity::~Entity()
-{
-    if (this->drawable != nullptr) free(this->drawable);
-}
-
-
-
-void Entity::SetDrawable(sf::Drawable &_drawable) { this->drawable = &_drawable; }
-
-sf::Drawable &Entity::GetDrawable() { return *this->drawable; }
