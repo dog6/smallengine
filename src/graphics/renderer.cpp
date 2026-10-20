@@ -46,7 +46,7 @@ void Renderer::Render(sf::RenderWindow *window,
     }
 
     // Clear last frame
-    window->clear(sf::Color::Black);
+    window->clear(clearBufferColor);
 
     // Render Entities
     if (ents.size() > 0) RenderEntitites(window, ents);

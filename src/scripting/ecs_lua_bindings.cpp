@@ -32,16 +32,15 @@ static void RegisterEntity(sol::state& lua)
     );
 }
 
-static void RegisterEntityManager(sol::state& lua){
-    
+static void RegisterEntityManager(sol::state& lua)
+{
     lua.new_usertype<Entity>("Entman", 
         "MakeEntity", &EntityManager::MakeEntity,
         "RemoveEntity", &EntityManager::RemoveEntity
     );
-
-
 }
 
+// static void Register
 
 void ECSLuaBindings::Register(sol::state &lua)
 {

@@ -17,7 +17,7 @@ class Renderer {
         void RenderEntitites(sf::RenderWindow* window, const std::vector<std::unique_ptr<sg::ECS::Entity>>& ents);
 
     public:
-
+        sf::Color clearBufferColor = sf::Color::Black;
         void Render(sf::RenderWindow* window, const std::vector<std::unique_ptr<sg::ECS::Entity>>& ents);
 
 };

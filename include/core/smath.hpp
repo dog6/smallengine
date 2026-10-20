@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 
 namespace sg::Core {
 
@@ -25,3 +27,9 @@ struct vec2f {
 };
 
 }
+
+// min and max are included
+int random_int(int min, int max);
+
+// min is included, max is not
+float random_float(float min, float max);
