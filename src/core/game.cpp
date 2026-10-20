@@ -73,7 +73,7 @@ void Game::Init()
 // Avoid complexity
 // Next draw circle
 // We need somewhere to store CreateRectEntity(), and ideally change it to be more generic
-std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pixel_pos,
+std::unique_ptr<Entity> CreateRectEntityPixels(b2WorldId worldId, sf::Vector2f pixel_pos,
                                 sf::Vector2f pixel_size, sf::Color col, bool isStatic)
                                 {
     
@@ -96,7 +96,7 @@ std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pixel_p
 }
 
 // Same as above, but takes in meter pos/size instead of pixel size
-std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, b2Vec2 meter_pos,
+std::unique_ptr<Entity> CreateRectEntityMeters(b2WorldId worldId, b2Vec2 meter_pos,
                                 b2Vec2 meter_size, sf::Color col, bool isStatic)
                                 {
     
@@ -135,20 +135,20 @@ void Game::Load()
     // Create person sized box
     b2Vec2 person_ref_size = b2Vec2{0.45, 1.75};
     b2Vec2 person_ref_pos = b2Vec2{20.0f, 20.0f};
-    EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
+    EntityManager::entman.Add(CreateRectEntityMeters(this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
     
     
     // Load dynamic box
     for (int i = 0; i < 500; i++){
         b2Vec2 ent_size = b2Vec2{1, 1};
         b2Vec2 ent_pos = b2Vec2{10.0f, 50.0f-(i*2)};
-        EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, ent_pos, ent_size, sf::Color{130,255,180}, false));
+        EntityManager::entman.Add(CreateRectEntityMeters(this->gameWorld.worldId, ent_pos, ent_size, sf::Color{130,255,180}, false));
     }
 
     // Load ground
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
     sf::Vector2f ground_pos = sf::Vector2f(ground_size.x * 0.5f, static_cast<float>(ws->resolution.y)-ground_size.y * 0.5f);
-    EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
+    EntityManager::entman.Add(CreateRectEntityPixels(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
 
     // TODO: Create Circle
     // END OF TEMP CODE
