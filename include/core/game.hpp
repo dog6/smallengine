@@ -14,7 +14,6 @@ namespace sg {
             inline static Core::Settings settings;
             sf::RenderWindow gameWindow;
             Graphics::Renderer renderer;
-            List<sg::ECS::Entity> entman;
             sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
             inline static Game* Instance = nullptr;
 

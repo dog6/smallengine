@@ -1,8 +1,6 @@
 #include "core/game.hpp"
 
 #include <spdlog/spdlog.h>
-// #include <spdlog/sinks/basic_file_sink.h>
-// #include <spdlog/sinks/stdout_color_sinks.h> // For colored console output
 #include "ecs/entity.hpp"
 #include "ecs/components/drawable_component.hpp"
 #include "ecs/components/physics_component.hpp"
@@ -10,6 +8,9 @@
 #include "physics/box2dworld.hpp"
 #include "core/b2sf.hpp"
 #include "core/logger.hpp"
+#include "ecs/entity_manager.hpp"
+
+#include <variant>
 
 using namespace sg;
 using namespace sg::Core;
@@ -40,7 +41,7 @@ void Game::Run()
         this->Update();
 
         // Draw all drawables added to renderer
-        this->renderer.Render(&this->gameWindow, entman.GetAll());
+        this->renderer.Render(&this->gameWindow, EntityManager::entman.GetAll());
 
  
         frameNumber++;
@@ -61,7 +62,7 @@ void Game::Init()
     spdlog::info("Printing settings..\nVersion: {}\nStarted on: {}\nAuthor: {}\n", pi->version, pi->started_on, pi->author);
 
     // Create list to store entitites
-    entman = List<Entity>();
+    EntityManager::entman = List<Entity>();
 
 
     spdlog::info("Game finished initializing!");
@@ -72,28 +73,52 @@ void Game::Init()
 // Avoid complexity
 // Next draw circle
 // We need somewhere to store CreateRectEntity(), and ideally change it to be more generic
-
 std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, sf::Vector2f pixel_pos,
                                 sf::Vector2f pixel_size, sf::Color col, bool isStatic)
                                 {
     
     // Create new unique_ptr<Entity>
-    auto e = std::make_unique<Entity>("Box");
+    std::unique_ptr<Entity> ent = std::make_unique<Entity>("Box");
 
     // Create and add PhysicsComponent
     b2Vec2 b2size = pixelsToMeters(pixel_size);
     b2Polygon box_polygon = b2MakeBox(b2size.x*0.5f, b2size.y*0.5f);
-    e->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, box_polygon);
+    ent->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, box_polygon);
     
     // Create and add DrawableComponent
-    auto rect = std::make_unique<sf::RectangleShape>(pixel_size);
+    std::unique_ptr<sf::RectangleShape> rect = std::make_unique<sf::RectangleShape>(pixel_size);
     rect->setFillColor(col);
     rect->setOrigin(pixel_size*0.5f);
     rect->setPosition(pixel_pos);
-    e->AddComponent<DrawableComponent>(std::move(rect));
+    ent->AddComponent<DrawableComponent>(std::move(rect));
 
-    return e;
+    return ent;
 }
+
+// Same as above, but takes in meter pos/size instead of pixel size
+std::unique_ptr<Entity> CreateRectEntity(b2WorldId worldId, b2Vec2 meter_pos,
+                                b2Vec2 meter_size, sf::Color col, bool isStatic)
+                                {
+    
+    // Create new unique_ptr<Entity>
+    std::unique_ptr<Entity> ent = std::make_unique<Entity>("Box");
+
+    // Create and add PhysicsComponent
+    // b2Vec2 b2size = metersToPixels(meter_pos);
+    b2Polygon box_polygon = b2MakeBox(meter_size.x*0.5f, meter_size.y*0.5f);
+    ent->AddComponent<PhysicsComponent>(isStatic, meter_pos, worldId, box_polygon);
+    
+    // Create and add DrawableComponent
+    sf::Vector2f sf_size = metersToPixels(meter_size);
+    std::unique_ptr<sf::RectangleShape> rect = std::make_unique<sf::RectangleShape>(sf_size);
+    rect->setFillColor(col);
+    rect->setOrigin(sf_size*0.5f);
+    rect->setPosition(sf_size);
+    ent->AddComponent<DrawableComponent>(std::move(rect));
+
+    return ent;
+}
+
 
 // Creates gameWindow, calls Run()
 void Game::Load()
@@ -107,19 +132,27 @@ void Game::Load()
 
     // TEMP CODE
 
+    // Create person sized box
+    b2Vec2 person_ref_size = b2Vec2{0.45, 1.75};
+    b2Vec2 person_ref_pos = b2Vec2{20.0f, 20.0f};
+    EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
+    
+    
     // Load dynamic box
-    for (int i = 0; i < 3; i++){
-        sf::Vector2f e_size = sf::Vector2f(50, 50);
-        sf::Vector2f e_pos = sf::Vector2f(500, 50*i);
-        entman.Add(CreateRectEntity(this->gameWorld.worldId, e_pos, e_size, sf::Color{255,80,140}, false));
+    for (int i = 0; i < 500; i++){
+        b2Vec2 ent_size = b2Vec2{1, 1};
+        b2Vec2 ent_pos = b2Vec2{10.0f, 50.0f-(i*2)};
+        EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, ent_pos, ent_size, sf::Color{130,255,180}, false));
     }
 
     // Load ground
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
-    sf::Vector2f ground_pos = sf::Vector2f(0.0f, static_cast<float>(ws->resolution.y)-32);
-    entman.Add(CreateRectEntity(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
+    sf::Vector2f ground_pos = sf::Vector2f(ground_size.x * 0.5f, static_cast<float>(ws->resolution.y)-ground_size.y * 0.5f);
+    EntityManager::entman.Add(CreateRectEntity(this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
 
+    // TODO: Create Circle
     // END OF TEMP CODE
+
 
     spdlog::info("Game finished loading!");
     this->Run();
@@ -136,14 +169,15 @@ void Game::Update()
         }
     }
 
-    entman.Update();
+    EntityManager::entman.Update();
 
-    auto b = entman.Get(1);
-    auto pb = b->GetComponent<PhysicsComponent>();
-    b2BodyId bid = pb->GetBody().GetBodyId();
-    b2Vec2 position = b2Body_GetPosition(bid);
-    b2Rot rotation = b2Body_GetRotation(bid);
-    printf("\r%s - %4.2f %4.2f %4.2f", b->GetName().c_str(), position.x, position.y, b2Rot_GetAngle(rotation));
+    // Debug physics logging
+    // auto b = EntityManager::entman.Get(1);
+    // auto pb = b->GetComponent<PhysicsComponent>();
+    // b2BodyId bid = pb->GetBody().GetBodyId();
+    // b2Vec2 position = b2Body_GetPosition(bid);
+    // b2Rot rotation = b2Body_GetRotation(bid);
+    // printf("\r%s - %4.2f %4.2f %4.2f", b->GetName().c_str(), position.x, position.y, b2Rot_GetAngle(rotation));
 
     b2World_Step(this->gameWorld.worldId, 1.0f/60.0f, 4);
 }

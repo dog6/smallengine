@@ -13,7 +13,7 @@ namespace sg::Core {
     // 27" @ 1080p = 3228 PPM
     // 27" @ 4K    = 6424 PPM
 
-    constexpr float PIXELS_PER_METER = 42; // pixels per meter 
+    constexpr float PIXELS_PER_METER = 20;//42; // pixels per meter 
     
     // SFML (Pixels) -> Box2D (Meters)
     inline b2Vec2 pixelsToMeters(const sf::Vector2f& sfVec) {
