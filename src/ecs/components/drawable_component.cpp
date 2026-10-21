@@ -2,7 +2,7 @@
 #include "ecs/components/physics_component.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include "ecs/entity.hpp"
-#include "core/b2sf.hpp"
+#include "core/smath.hpp"
 
 using namespace sg::ECS::Components;
 using namespace sg::Core;

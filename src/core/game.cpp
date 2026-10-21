@@ -6,7 +6,6 @@
 #include "ecs/components/physics_component.hpp"
 #include <box2d/box2d.h>
 #include "physics/box2dworld.hpp"
-#include "core/b2sf.hpp"
 #include "core/logger.hpp"
 #include "ecs/entity_manager.hpp"
 #include "graphics/shape_factory.hpp"
@@ -84,18 +83,31 @@ void Game::Load()
 
     this->gameWindow = sf::RenderWindow(sf::VideoMode({ws->resolution.x, ws->resolution.y}), ws->title);
     this->gameWindow.setFramerateLimit(ws->max_framerate); // Limit frame rate
+    float res_x = static_cast<float>(ws->resolution.x);
+    float res_y = static_cast<float>(ws->resolution.y);
 
     // TEMP CODE
 
     // Create person sized box
     b2Vec2 person_ref_size = b2Vec2{0.45, 1.75};
     b2Vec2 person_ref_pos = b2Vec2{20.0f, 20.0f};
-    EntityManager::entman.Add(EntityFactory::CreateRectEntityMeters("Person", this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntity("Person", this->gameWorld.worldId, person_ref_pos, person_ref_size,
+         sf::Color{255,80,140}, DYNAMIC_BODY, USE_METER_SCALE));
     
 
-    
+
+
+    // Wall dimensions
+    const float wall_thickness = 32.0f;
+    sf::Vector2f wall_size = sf::Vector2f(wall_thickness, res_y); // walls as tall as window
+    sf::Vector2f left_pos = sf::Vector2f(wall_thickness * 0.5f, res_y * 0.5f);
+    sf::Vector2f right_pos = sf::Vector2f(res_x - wall_thickness * 0.5f, res_y * 0.5f);
+
+    // Entity sizes
+    sf::Vector2f ent_size = sf::Vector2f(2, 2);
+
     // Load dynamic box
-    for (int i = 0; i < 300; i++){
+    for (int i = 0; i < 500; i++){
         uint8_t r = static_cast<uint8_t>(random_int(60, 255));
         uint8_t g = static_cast<uint8_t>(random_int(60, 255));
         uint8_t b = static_cast<uint8_t>(random_int(60, 255));
@@ -104,21 +116,22 @@ void Game::Load()
         b2Vec2 b2_size = b2Vec2{1, 1};
         b2Vec2 b2_pos = b2Vec2{10.0f, 50.0f-(i*2)};
         EntityManager::entman.Add(
-            EntityFactory::CreateRectEntityMeters("Dynamic Box", this->gameWorld.worldId, b2_pos, b2_size, sf::Color{r,g,b}, false)
+            EntityFactory::CreateRectEntity("Dynamic Box", this->gameWorld.worldId, b2_pos, b2_size, 
+                    sf::Color{r,g,b}, DYNAMIC_BODY, USE_METER_SCALE)
         );
-
-        // Load pixel sized boxes
-        sf::Vector2f ent_size = sf::Vector2f(10, 10);
+        
+        // // Load pixel sized boxes
         sf::Vector2f ent_pos = sf::Vector2f(250.0f, 50.0f-(i*12));
         EntityManager::entman.Add(
-            EntityFactory::CreateRectEntityPixels("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size, sf::Color{r,g,b}, false)
+            EntityFactory::CreateRectEntity("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size,
+                    sf::Color{r,g,b}, DYNAMIC_BODY, USE_PIXEL_SCALE)
         );
 
-        // EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size, sf::Color{r,g,b}, false));
         b2Vec2 circle_pos = b2Vec2{15, 50.0f-(i*3)};
-        float circle_radius = 15; // 2m in radius
+        float circle_radius = 5; // 2m in radius
         EntityManager::entman.Add(
-            EntityFactory::CreateCircleEntityMeters("Dynamic Circle", this->gameWorld.worldId, circle_pos, circle_radius, sf::Color(r,g,b), false)
+            EntityFactory::CreateCircleEntity("Dynamic Circle", this->gameWorld.worldId, circle_pos, circle_radius,
+                    sf::Color(r,g,b), DYNAMIC_BODY, USE_METER_SCALE)
         );
     }
 
@@ -126,23 +139,15 @@ void Game::Load()
     // Load ground
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
     sf::Vector2f ground_pos = sf::Vector2f(ground_size.x * 0.5f, static_cast<float>(ws->resolution.y)-ground_size.y * 0.5f);
-    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("Ground", this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntity("Ground", this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, STATIC_BODY, USE_PIXEL_SCALE));
 
-    // Wall thickness in pixels
-    const float wall_thickness = 32.0f;
-    float res_x = static_cast<float>(ws->resolution.x);
-    float res_y = static_cast<float>(ws->resolution.y);
+    // Left wall
+    EntityManager::entman.Add(EntityFactory::CreateRectEntity("LeftWall", this->gameWorld.worldId, left_pos, wall_size, 
+            sf::Color{255,255,255}, STATIC_BODY, USE_PIXEL_SCALE));
 
-    // Both walls have the full height of the window
-    sf::Vector2f wall_size = sf::Vector2f(wall_thickness, res_y);
-
-    // Left wall: the center is half a thickness from the left edge
-    sf::Vector2f left_pos = sf::Vector2f(wall_thickness * 0.5f, res_y * 0.5f);
-    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("LeftWall", this->gameWorld.worldId, left_pos, wall_size, sf::Color{255,255,255}, true));
-
-    // Right wall: the center is half a thickness from the right edge
-    sf::Vector2f right_pos = sf::Vector2f(res_x - wall_thickness * 0.5f, res_y * 0.5f);
-    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("RightWall", this->gameWorld.worldId, right_pos, wall_size, sf::Color{255,255,255}, true));
+    // Right wall
+    EntityManager::entman.Add(EntityFactory::CreateRectEntity("RightWall", this->gameWorld.worldId, right_pos, wall_size, 
+            sf::Color{255,255,255}, STATIC_BODY, USE_PIXEL_SCALE));
 
 
     // TODO: Create Circle

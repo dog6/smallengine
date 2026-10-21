@@ -1,7 +1,7 @@
 #include "graphics/renderer.hpp"
 #include "ecs/components/drawable_component.hpp"
 #include "ecs/components/physics_component.hpp"
-#include "core/b2sf.hpp"
+#include "core/smath.hpp"
 #include <spdlog/spdlog.h>
 
 using namespace sg::Graphics;

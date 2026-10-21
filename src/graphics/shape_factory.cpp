@@ -20,4 +20,5 @@ std::unique_ptr<sf::Drawable> ShapeFactory::MakeCircle(float radius, sf::Color c
     circle->setOrigin(sf::Vector2f(radius, radius));
     circle->setPosition(size);
     return circle;
+    
 }

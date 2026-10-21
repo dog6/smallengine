@@ -43,6 +43,12 @@ static void RegisterEntityManager(sol::state& lua)
     );
 }
 
+static void RegisterEntityFactory(sol::state& lua){
+
+    // lua.new_usertype<Entity>("")
+
+}
+
 
 // static void Register
 void ECSLuaBindings::Register(sol::state &lua)

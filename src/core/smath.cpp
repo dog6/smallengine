@@ -9,11 +9,33 @@ vec2f::vec2f()
     this->y = 0.0f;
 }
 
+sg::Core::vec2f::vec2f(sf::Vector2f sfv)
+{
+    this->x = sfv.x;
+    this->y = sfv.y;
+}
+
+sg::Core::vec2f::vec2f(b2Vec2 b2v)
+{
+    this->x = b2v.x;
+    this->y = b2v.y;
+}
+
 vec2f::vec2f(float _x, float _y)
 {
     this->x = _x;
     this->y = _y;
 }
+
+sf::Vector2f sg::Core::vec2f::toSFML() { return sf::Vector2f(this->x, this->y); }
+b2Vec2 sg::Core::vec2f::toBox2D() { return b2Vec2{this->x, this->y}; }
+
+// Pixels -> Meter
+vec2f sg::Core::vec2f::pixelsToMeters(vec2f &v) { return { v.x / PIXELS_PER_METER, v.y / PIXELS_PER_METER }; }
+
+// Meter -> Pixels
+vec2f sg::Core::vec2f::metersToPixels(vec2f &v)  { return sf::Vector2f(v.x * PIXELS_PER_METER, v.y * PIXELS_PER_METER); }
+
 
 vec2::vec2()
 {
