@@ -5,8 +5,8 @@
 #include <sol/sol.hpp>
 #include "scripting/lua_script.hpp"
 
-#include "scripting/ecs_lua_bindings.hpp"
-#include "scripting/graphics_lua_bindings.hpp"
+#include "scripting/bindings/ecs_lua_bindings.hpp"
+#include "scripting/bindings/graphics_lua_bindings.hpp"
 
 namespace sg::Scripting {
 

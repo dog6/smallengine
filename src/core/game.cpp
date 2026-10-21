@@ -10,7 +10,7 @@
 #include "core/logger.hpp"
 #include "ecs/entity_manager.hpp"
 #include "graphics/shape_factory.hpp"
-#include <variant>
+#include "content/entity_factory.hpp"
 
 #include "core/smath.hpp"
 
@@ -20,6 +20,7 @@ using namespace sg::Physics;
 using namespace sg::ECS;
 using namespace sg::ECS::Components;
 using namespace sg::Graphics;
+using namespace sg::Content;
 
 Game::Game()
 {
@@ -73,84 +74,84 @@ void Game::Init()
 }
 
 
-// Create a circle entity. Radius and position are in pixels.
-std::unique_ptr<Entity> CreateCircleEntityPixels(std::string name, b2WorldId worldId, sf::Vector2f pixel_pos,
-                                float pixel_radius, sf::Color col, bool isStatic)
-{
-    std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
+// // Create a circle entity. Radius and position are in pixels.
+// std::unique_ptr<Entity> CreateCircleEntityPixels(std::string name, b2WorldId worldId, sf::Vector2f pixel_pos,
+//                                 float pixel_radius, sf::Color col, bool isStatic)
+// {
+//     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
-    // Create and add PhysicsComponent
-    b2Circle circle{};
-    circle.center = {0.0f, 0.0f};
-    circle.radius = pixel_radius;
-    ent->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, circle);
+//     // Create and add PhysicsComponent
+//     b2Circle circle{};
+//     circle.center = {0.0f, 0.0f};
+//     circle.radius = pixel_radius;
+//     ent->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, circle);
 
-    // Create and add DrawableComponent
-    auto shape = ShapeFactory::MakeCircle(pixel_radius, col);
-    ent->AddComponent<DrawableComponent>(std::move(shape));
+//     // Create and add DrawableComponent
+//     auto shape = ShapeFactory::MakeCircle(pixel_radius, col);
+//     ent->AddComponent<DrawableComponent>(std::move(shape));
 
-    return ent;
-}
+//     return ent;
+// }
 
-// Same as above, but position and radius are in meters.
-std::unique_ptr<Entity> CreateCircleEntityMeters(std::string name, b2WorldId worldId, b2Vec2 meter_pos,
-                                float meter_radius, sf::Color col, bool isStatic)
-{
-    std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
+// // Same as above, but position and radius are in meters.
+// std::unique_ptr<Entity> CreateCircleEntityMeters(std::string name, b2WorldId worldId, b2Vec2 meter_pos,
+//                                 float meter_radius, sf::Color col, bool isStatic)
+// {
+//     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
-    // Create and add PhysicsComponent
-    b2Circle circle{};
-    circle.center = {0.0f, 0.0f};
-    circle.radius = meter_radius/PIXELS_PER_METER;
-    ent->AddComponent<PhysicsComponent>(isStatic, meter_pos, worldId, circle);
+//     // Create and add PhysicsComponent
+//     b2Circle circle{};
+//     circle.center = {0.0f, 0.0f};
+//     circle.radius = meter_radius/PIXELS_PER_METER;
+//     ent->AddComponent<PhysicsComponent>(isStatic, meter_pos, worldId, circle);
 
-    // Create and add DrawableComponent
-    auto shape = ShapeFactory::MakeCircle(meter_radius, col);
-    ent->AddComponent<DrawableComponent>(std::move(shape));
+//     // Create and add DrawableComponent
+//     auto shape = ShapeFactory::MakeCircle(meter_radius, col);
+//     ent->AddComponent<DrawableComponent>(std::move(shape));
 
-    return ent;
-}
+//     return ent;
+// }
 
 
-// We need somewhere to store CreateRectEntity(), and ideally change it to be more generic
-std::unique_ptr<Entity> CreateRectEntityPixels(std::string name, b2WorldId worldId, sf::Vector2f pixel_pos,
-                                sf::Vector2f pixel_size, sf::Color col, bool isStatic)
-                                {
+// // We need somewhere to store CreateRectEntity(), and ideally change it to be more generic
+// std::unique_ptr<Entity> CreateRectEntityPixels(std::string name, b2WorldId worldId, sf::Vector2f pixel_pos,
+//                                 sf::Vector2f pixel_size, sf::Color col, bool isStatic)
+//                                 {
     
-    // Create new unique_ptr<Entity>
-    std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
+//     // Create new unique_ptr<Entity>
+//     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
-    // Create and add PhysicsComponent
-    b2Vec2 b2size = pixelsToMeters(pixel_size);
-    b2Polygon box_polygon = b2MakeBox(b2size.x*0.5f, b2size.y*0.5f);
-    ent->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, box_polygon);
+//     // Create and add PhysicsComponent
+//     b2Vec2 b2size = pixelsToMeters(pixel_size);
+//     b2Polygon box_polygon = b2MakeBox(b2size.x*0.5f, b2size.y*0.5f);
+//     ent->AddComponent<PhysicsComponent>(isStatic, pixelsToMeters(pixel_pos), worldId, box_polygon);
     
-    // Create and add DrawableComponent
-    auto rect = ShapeFactory::MakeRectangle(pixel_size, col);
-    ent->AddComponent<DrawableComponent>(std::move(rect));
+//     // Create and add DrawableComponent
+//     auto rect = ShapeFactory::MakeRectangle(pixel_size, col);
+//     ent->AddComponent<DrawableComponent>(std::move(rect));
 
-    return ent;
-}
+//     return ent;
+// }
 
-// Same as above, but takes in meter pos/size instead of pixel size
-std::unique_ptr<Entity> CreateRectEntityMeters(std::string name, b2WorldId worldId, b2Vec2 meter_pos,
-                                b2Vec2 meter_size, sf::Color col, bool isStatic)
-                                {
+// // Same as above, but takes in meter pos/size instead of pixel size
+// std::unique_ptr<Entity> CreateRectEntityMeters(std::string name, b2WorldId worldId, b2Vec2 meter_pos,
+//                                 b2Vec2 meter_size, sf::Color col, bool isStatic)
+//                                 {
     
-    // Create new unique_ptr<Entity>
-    std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
+//     // Create new unique_ptr<Entity>
+//     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
-    // TODO NEXT --> Implement a way to create b2Polygons inside lua and assign them to drawables
-    b2Polygon poly = b2MakeBox(meter_size.x*0.5f, meter_size.y*0.5f);
-    ent->AddComponent<PhysicsComponent>(isStatic, meter_pos, worldId, poly);
+//     // TODO NEXT --> Implement a way to create b2Polygons inside lua and assign them to drawables
+//     b2Polygon poly = b2MakeBox(meter_size.x*0.5f, meter_size.y*0.5f);
+//     ent->AddComponent<PhysicsComponent>(isStatic, meter_pos, worldId, poly);
     
-    // Create and add DrawableComponent
-    sf::Vector2f sf_size = metersToPixels(meter_size);
-    auto rect = ShapeFactory::MakeRectangle(sf_size, col);
-    ent->AddComponent<DrawableComponent>(std::move(rect));
+//     // Create and add DrawableComponent
+//     sf::Vector2f sf_size = metersToPixels(meter_size);
+//     auto rect = ShapeFactory::MakeRectangle(sf_size, col);
+//     ent->AddComponent<DrawableComponent>(std::move(rect));
 
-    return ent;
-}
+//     return ent;
+// }
 
 
 // Creates gameWindow, calls Run()
@@ -169,7 +170,7 @@ void Game::Load()
     // Create person sized box
     b2Vec2 person_ref_size = b2Vec2{0.45, 1.75};
     b2Vec2 person_ref_pos = b2Vec2{20.0f, 20.0f};
-    EntityManager::entman.Add(CreateRectEntityMeters("Person", this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntityMeters("Person", this->gameWorld.worldId, person_ref_pos, person_ref_size, sf::Color{255,80,140}, false));
     
 
     
@@ -182,18 +183,22 @@ void Game::Load()
         // Load meter sized boxes
         b2Vec2 b2_size = b2Vec2{1, 1};
         b2Vec2 b2_pos = b2Vec2{10.0f, 50.0f-(i*2)};
-        EntityManager::entman.Add(CreateRectEntityMeters("Dynamic Box", this->gameWorld.worldId, b2_pos, b2_size, sf::Color{r,g,b}, false));
+        EntityManager::entman.Add(
+            EntityFactory::CreateRectEntityMeters("Dynamic Box", this->gameWorld.worldId, b2_pos, b2_size, sf::Color{r,g,b}, false)
+        );
 
         // Load pixel sized boxes
         sf::Vector2f ent_size = sf::Vector2f(10, 10);
         sf::Vector2f ent_pos = sf::Vector2f(250.0f, 50.0f-(i*12));
+        EntityManager::entman.Add(
+            EntityFactory::CreateRectEntityPixels("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size, sf::Color{r,g,b}, false)
+        );
 
-        EntityManager::entman.Add(CreateRectEntityPixels("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size, sf::Color{r,g,b}, false));
-          
+        // EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size, sf::Color{r,g,b}, false));
         b2Vec2 circle_pos = b2Vec2{15, 50.0f-(i*3)};
         float circle_radius = 15; // 2m in radius
         EntityManager::entman.Add(
-            CreateCircleEntityMeters("Dynamic Circle", this->gameWorld.worldId, circle_pos, circle_radius, sf::Color(r,g,b), false)
+            EntityFactory::CreateCircleEntityMeters("Dynamic Circle", this->gameWorld.worldId, circle_pos, circle_radius, sf::Color(r,g,b), false)
         );
     }
 
@@ -201,7 +206,7 @@ void Game::Load()
     // Load ground
     sf::Vector2f ground_size = sf::Vector2f(static_cast<float>(ws->resolution.x), 32.0f);
     sf::Vector2f ground_pos = sf::Vector2f(ground_size.x * 0.5f, static_cast<float>(ws->resolution.y)-ground_size.y * 0.5f);
-    EntityManager::entman.Add(CreateRectEntityPixels("Ground", this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("Ground", this->gameWorld.worldId, ground_pos, ground_size, sf::Color{255,255,255}, true));
 
     // Wall thickness in pixels
     const float wall_thickness = 32.0f;
@@ -213,11 +218,11 @@ void Game::Load()
 
     // Left wall: the center is half a thickness from the left edge
     sf::Vector2f left_pos = sf::Vector2f(wall_thickness * 0.5f, res_y * 0.5f);
-    EntityManager::entman.Add(CreateRectEntityPixels("LeftWall", this->gameWorld.worldId, left_pos, wall_size, sf::Color{255,255,255}, true));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("LeftWall", this->gameWorld.worldId, left_pos, wall_size, sf::Color{255,255,255}, true));
 
     // Right wall: the center is half a thickness from the right edge
     sf::Vector2f right_pos = sf::Vector2f(res_x - wall_thickness * 0.5f, res_y * 0.5f);
-    EntityManager::entman.Add(CreateRectEntityPixels("RightWall", this->gameWorld.worldId, right_pos, wall_size, sf::Color{255,255,255}, true));
+    EntityManager::entman.Add(EntityFactory::CreateRectEntityPixels("RightWall", this->gameWorld.worldId, right_pos, wall_size, sf::Color{255,255,255}, true));
 
 
     // TODO: Create Circle

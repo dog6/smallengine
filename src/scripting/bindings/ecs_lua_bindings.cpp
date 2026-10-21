@@ -1,4 +1,4 @@
-#include "scripting/ecs_lua_bindings.hpp"
+#include "scripting/bindings/ecs_lua_bindings.hpp"
 #include "ecs/entity.hpp"
 #include "ecs/component.hpp"
 #include "ecs/entity_manager.hpp"

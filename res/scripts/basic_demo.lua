@@ -5,7 +5,6 @@ print("--- basic_demo.lua started ---")
 
 function CreateBox(name, pos, size) 
     local box = entman:MakeEntity(name)
-    
     box:AddComponent("DrawableComponent")
     box:AddComponent("PhysicsComponent")
 
