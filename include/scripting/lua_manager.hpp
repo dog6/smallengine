@@ -5,9 +5,8 @@
 #include <sol/sol.hpp>
 #include "scripting/lua_script.hpp"
 
-// #ifdef NG_DEVELOPER_MODE
-// #include "AVGNG/Editor/ConsoleView.hpp"
-// #endif
+#include "scripting/ecs_lua_bindings.hpp"
+#include "scripting/graphics_lua_bindings.hpp"
 
 namespace sg::Scripting {
 
@@ -18,6 +17,9 @@ namespace sg::Scripting {
 
 		static std::vector<LuaScript> s_scripts;
 		static void Load(LuaScript* script);
+
+    	inline static sg::Scripting::Bindings::ECSLuaBindings ecs_lua_bindings;
+		inline static sg::Scripting::Bindings::GraphicsLuaBindings graphics_lua_bindings;
         
         public:
         

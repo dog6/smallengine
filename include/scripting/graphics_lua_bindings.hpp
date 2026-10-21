@@ -1,13 +1,14 @@
 #pragma once
 
 #include <sol/sol.hpp>
+#include "scripting/lua_bindings.hpp"
 
 namespace sg::Scripting::Bindings {
 
-    class GraphicsLuaBindings {
+    class GraphicsLuaBindings : public LuaBindings {
 
         public:
-            static void Register(sol::state& lua);
+            void Register(sol::state& lua) override;
 
     };
 

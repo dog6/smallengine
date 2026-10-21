@@ -1,8 +1,11 @@
 #include "core/game.hpp"
-#include "scripting/lua_manager.hpp"
 #include <spdlog/spdlog.h>
+#include "scripting/lua_manager.hpp"
+
 
 using namespace sg::Scripting;
+using namespace sg::Scripting::Bindings;
+
 using namespace sg::Core;
 
 void LuaManager::Load(LuaScript *script)
@@ -60,7 +63,10 @@ void LuaManager::Update(float deltaTime, LuaScript &script)
 
 void LuaManager::BindToLua(sol::state &lua)
 {
-
+    ecs_lua_bindings.Register(lua);
+    graphics_lua_bindings.Register(lua);
+    // LuaManager::ecs_lua_bindings.Register(lua);
+    // LuaManager::graphics_lua_bindings.Register(lua);
     // CoreRegistrar::Register(lua);
     // GraphicsRegistrar::Register(lua);
     // PhysicsRegistrar::Register(lua);

@@ -7,7 +7,7 @@ namespace sg::Scripting {
     class LuaBindings {
 
         public:
-            static void Register(sol::state& lua);
+            virtual  void Register(sol::state& lua) = 0;
 
     };
 
