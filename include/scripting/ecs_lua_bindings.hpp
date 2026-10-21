@@ -2,7 +2,7 @@
 
 #include <sol/sol.hpp>
 
-namespace sg::Scripting {
+namespace sg::Scripting::Bindings {
 
     class ECSLuaBindings {
 

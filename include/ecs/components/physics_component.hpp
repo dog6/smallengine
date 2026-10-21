@@ -10,8 +10,12 @@ namespace sg::ECS::Components {
     class PhysicsComponent : public Component {
     public:
         explicit PhysicsComponent(std::unique_ptr<sg::Physics::PhysicsBody> b);
+
         PhysicsComponent(bool isStatic, b2Vec2 position, b2WorldId world, const b2Polygon& polygon)
-                : body(std::make_unique<sg::Physics::PhysicsBody>(isStatic, position, world, polygon)){};
+                : body(std::make_unique<sg::Physics::PhysicsBody>(isStatic, position, world, polygon)) {}
+
+        PhysicsComponent(bool isStatic, b2Vec2 position, b2WorldId world, const b2Circle& circle)
+                : body(std::make_unique<sg::Physics::PhysicsBody>(isStatic, position, world, circle)) {}
 
         sg::Physics::PhysicsBody& GetBody() { return *body; }
         void Update();

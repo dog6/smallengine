@@ -28,10 +28,7 @@ std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
     spdlog::info("Binding script '{}'..", script->filepath.c_str());
     BindToLua(script->lua);
 
-    // Pass references idk lol
-    // script->lua["game"] = Game::GetInstance();
-    // script->lua["CreateRectEntity"]
-
+   
     try {
         auto result = script->lua.script_file(filepath);
         if (!result.valid()) {
@@ -48,7 +45,7 @@ std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
     return script; // The compiler moves it. Do not write std::move here.
 }
 
-void sg::Scripting::LuaManager::Update(float deltaTime, LuaScript &script)
+void LuaManager::Update(float deltaTime, LuaScript &script)
 {
     sol::protected_function updateFunc = script.lua["OnUpdate"];
         if (updateFunc.valid()) {
@@ -61,7 +58,7 @@ void sg::Scripting::LuaManager::Update(float deltaTime, LuaScript &script)
 
 }
 
-void sg::Scripting::LuaManager::BindToLua(sol::state &lua)
+void LuaManager::BindToLua(sol::state &lua)
 {
 
     // CoreRegistrar::Register(lua);
@@ -70,7 +67,7 @@ void sg::Scripting::LuaManager::BindToLua(sol::state &lua)
 
 }
 
-void sg::Scripting::LuaManager::Execute(std::string luaCode)
+void LuaManager::Execute(std::string luaCode)
 {
     LuaScript cmdScript = LuaScript();
     sol::state& lua = cmdScript.lua;

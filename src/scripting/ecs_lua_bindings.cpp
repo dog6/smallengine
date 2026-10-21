@@ -4,11 +4,15 @@
 #include "ecs/entity_manager.hpp"
 #include "ecs/components/physics_component.hpp"
 #include "ecs/components/drawable_component.hpp"
+#include <sol/sol.hpp>
 
 using namespace sg::Scripting;
+using namespace sg::Scripting::Bindings;
+
 using namespace sg::ECS::Components;
 using namespace sg::ECS;
 
+// Helper function
 static sol::object WrapComponent(sol::this_state s, const std::string& name, Component* comp)
 {
     if (!comp) return sol::nil;
@@ -17,13 +21,12 @@ static sol::object WrapComponent(sol::this_state s, const std::string& name, Com
     return sol::make_object(s, comp);
 }
 
+
 static void RegisterEntity(sol::state& lua)
 {
     lua.new_usertype<Entity>("Entity",
-        // "name", &Entity::name,
+        // "name", Entity::GetName(),
         "AddComponent", [](Entity& self, const std::string& name, sol::this_state s) {
-            // No AddComponentByName() method exists
-            // We need a way to implement more lua scripts
             return WrapComponent(s, name, self.AddComponentByName(name));
         },
         "GetComponent", [](Entity& self, const std::string& name, sol::this_state s) {
@@ -40,11 +43,12 @@ static void RegisterEntityManager(sol::state& lua)
     );
 }
 
-// static void Register
 
+// static void Register
 void ECSLuaBindings::Register(sol::state &lua)
 {
 
     RegisterEntity(lua);
+    RegisterEntityManager(lua);
 
 }

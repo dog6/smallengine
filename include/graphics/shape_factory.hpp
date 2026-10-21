@@ -9,7 +9,6 @@ namespace sg::Graphics {
         public:
             static std::unique_ptr<sf::Drawable> MakeRectangle(sf::Vector2f size, sf::Color color);
             static std::unique_ptr<sf::Drawable> MakeCircle(float radius, sf::Color color);
-
     };
 
 

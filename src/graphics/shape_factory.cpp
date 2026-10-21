@@ -1,6 +1,7 @@
 #include "graphics/shape_factory.hpp"
 
 using namespace sg::Graphics;
+// using namespace sg::Core;
 
 std::unique_ptr<sf::Drawable> ShapeFactory::MakeRectangle(sf::Vector2f size, sf::Color color)
 {
@@ -16,7 +17,7 @@ std::unique_ptr<sf::Drawable> ShapeFactory::MakeCircle(float radius, sf::Color c
     std::unique_ptr<sf::CircleShape> circle = std::make_unique<sf::CircleShape>(radius);
     circle->setFillColor(color);
     sf::Vector2f size = circle.get()->getScale();
-    circle->setOrigin(size*0.5f);
+    circle->setOrigin(sf::Vector2f(radius, radius));
     circle->setPosition(size);
     return circle;
 }

@@ -2,10 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "core/settings.hpp"
-#include "graphics/renderer.hpp"
 #include "physics/box2dworld.hpp"
-#include "core/list.hpp"
-#include "ecs/entity.hpp"
+#include "graphics/renderer.hpp"
+
 
 namespace sg {
     class Game {
@@ -13,7 +12,7 @@ namespace sg {
         private:
             inline static Core::Settings settings;
             sf::RenderWindow gameWindow;
-            Graphics::Renderer renderer;
+            sg::Graphics::Renderer renderer;
             sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
             inline static Game* Instance = nullptr;
 
