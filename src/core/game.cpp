@@ -184,7 +184,7 @@ void Game::Update()
     // b2Vec2 position = b2Body_GetPosition(bid);
     // b2Rot rotation = b2Body_GetRotation(bid);
     // printf("\r%s - %4.2f %4.2f %4.2f", b->GetName().c_str(), position.x, position.y, b2Rot_GetAngle(rotation));
-    b2World_Step(gameWorld.worldId, 1/60, 4);
+    b2World_Step(gameWorld.worldId, 1.0f/60.0f, 4);
 }
 
 // Called on first game loop

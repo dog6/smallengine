@@ -22,31 +22,26 @@ for i = 0, COUNT - 1 do
         smath.random_int(60, 255))
 
     -- Box with a size in meters
-    entman.Add(
-    
     manager.AddRect(
         "Dynamic Box", world_id,
         vec2f.new(10.0, 50.0 - (i * 2)),
         vec2f.new(1, 1),
         col, DYNAMIC_BODY, USE_METER_SCALE)
-    )
-    -- Box with a size in pixels
-    entman.Add(
 
+    -- Box with a size in pixels
     manager.AddRect(
         "Dynamic Box", world_id,
         vec2f.new(250.0, 50.0 - (i * 12)),
         vec2f.new(10, 10),
         col, DYNAMIC_BODY, USE_PIXEL_SCALE)
-    )
+
     -- Circle with a radius in meters
-    entman.Add(
     manager.AddCircle(
         "Dynamic Circle", world_id,
         vec2f.new(15, 50.0 - (i * 3)),
         5,
         col, DYNAMIC_BODY, USE_METER_SCALE)
-    )
+
 
 
 end
