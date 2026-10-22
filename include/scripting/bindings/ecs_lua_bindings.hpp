@@ -2,6 +2,7 @@
 
 #include <sol/sol.hpp>
 #include "scripting/lua_bindings.hpp"
+#include "graphics/scolor.hpp"
 
 namespace sg::Scripting::Bindings {
 

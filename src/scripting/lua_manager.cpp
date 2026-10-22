@@ -63,14 +63,10 @@ void LuaManager::Update(float deltaTime, LuaScript &script)
 
 void LuaManager::BindToLua(sol::state &lua)
 {
-    ecs_lua_bindings.Register(lua);
-    graphics_lua_bindings.Register(lua);
-    // LuaManager::ecs_lua_bindings.Register(lua);
-    // LuaManager::graphics_lua_bindings.Register(lua);
-    // CoreRegistrar::Register(lua);
-    // GraphicsRegistrar::Register(lua);
-    // PhysicsRegistrar::Register(lua);
-
+    // Bind script to different engine modules
+    ecs_lua_bindings.Register(lua);         // entity-component system - entity factory, entity manager, etc
+    graphics_lua_bindings.Register(lua);    // graphics system - color, shape factory, etc
+    core_lua_bindings.Register(lua);        // core systems - math, types, etc 
 }
 
 void LuaManager::Execute(std::string luaCode)

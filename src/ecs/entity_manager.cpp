@@ -17,3 +17,4 @@ std::size_t EntityManager::RemoveEntity(int index)
         return -1;
     }
 }
+

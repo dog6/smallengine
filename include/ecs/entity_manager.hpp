@@ -20,7 +20,7 @@ namespace sg::ECS {
             // Removes an entity from the entman via index
             // Returns new entity size_t if item removed, otherwise returns -1
             static std::size_t RemoveEntity(int index);
-    
+
     };
 
 }

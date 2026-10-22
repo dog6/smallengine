@@ -7,8 +7,9 @@ function CreateBox(name, pos, size)
     local box = entman:MakeEntity(name)
     box:AddComponent("DrawableComponent")
     box:AddComponent("PhysicsComponent")
-
-
+    
+local ball = EntityFactory.CreateCircleEntity("ball", world, vec2f.new(5, 3), 0.5, color, false, true)
+entman:Add()
 
 
 

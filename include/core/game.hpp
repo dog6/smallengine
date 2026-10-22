@@ -11,9 +11,9 @@ namespace sg {
 
         private:
             inline static Core::Settings settings;
-            sf::RenderWindow gameWindow;
-            sg::Graphics::Renderer renderer;
-            sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
+            inline static sf::RenderWindow gameWindow;
+            inline static sg::Graphics::Renderer renderer;
+            inline static sg::Physics::Box2DWorld gameWorld = sg::Physics::Box2DWorld(b2Vec2{0, 9.81f});
             inline static Game* Instance = nullptr;
 
             // Called every frame
@@ -35,7 +35,7 @@ namespace sg {
             ~Game() {}
 
             static Game* GetInstance() { return Game::Instance; }
-
+            static b2WorldId GetB2WorldId() { return gameWorld.worldId; }
             // Called first
             void Init();
     };

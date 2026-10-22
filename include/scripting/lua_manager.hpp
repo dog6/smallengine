@@ -7,6 +7,7 @@
 
 #include "scripting/bindings/ecs_lua_bindings.hpp"
 #include "scripting/bindings/graphics_lua_bindings.hpp"
+#include "scripting/bindings/core_lua_bindings.hpp"
 
 namespace sg::Scripting {
 
@@ -20,6 +21,7 @@ namespace sg::Scripting {
 
     	inline static sg::Scripting::Bindings::ECSLuaBindings ecs_lua_bindings;
 		inline static sg::Scripting::Bindings::GraphicsLuaBindings graphics_lua_bindings;
+		inline static sg::Scripting::Bindings::CoreLuaBindings core_lua_bindings;
         
         public:
         
