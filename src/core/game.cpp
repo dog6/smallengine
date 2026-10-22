@@ -95,7 +95,7 @@ void Game::Load()
          sf::Color{255,80,140}, DYNAMIC_BODY, USE_METER_SCALE));
     
 
-    LuaManager::LoadFromPath("D:/Projects/CPP/smallgame/res/scripts/demo.lua");
+    LuaManager::LoadFromPath("D:/Projects/CPP/smallgame/res/scripts/demo_1.lua");
 
 
     // Wall dimensions
@@ -103,38 +103,6 @@ void Game::Load()
     sf::Vector2f wall_size = sf::Vector2f(wall_thickness, res_y); // walls as tall as window
     sf::Vector2f left_pos = sf::Vector2f(wall_thickness * 0.5f, res_y * 0.5f);
     sf::Vector2f right_pos = sf::Vector2f(res_x - wall_thickness * 0.5f, res_y * 0.5f);
-
-    // Entity sizes
-    // sf::Vector2f ent_size = sf::Vector2f(2, 2);
-
-    // // Load dynamic box
-    // for (int i = 0; i < 500; i++){
-    //     uint8_t r = static_cast<uint8_t>(random_int(60, 255));
-    //     uint8_t g = static_cast<uint8_t>(random_int(60, 255));
-    //     uint8_t b = static_cast<uint8_t>(random_int(60, 255));
-    //     // Load meter sized boxes
-    //     b2Vec2 b2_size = b2Vec2{1, 1};
-    //     b2Vec2 b2_pos = b2Vec2{10.0f, 50.0f-(i*2)};
-    //     EntityManager::entman.Add(
-    //         EntityFactory::CreateRectEntity("Dynamic Box", this->gameWorld.worldId, b2_pos, b2_size, 
-    //                 sf::Color{r,g,b}, DYNAMIC_BODY, USE_METER_SCALE)
-    //     );
-        //    EntityManager::AddEntity(*EntityFactory::CreateRectEntity("Test", this->gameWorld.worldId, vec2f{50, 50}, vec2f{50, 50},
-        //                 sf::Color{255, 255, 255}, DYNAMIC_BODY, USE_METER_SCALE));
-    //     // // Load pixel sized boxes
-    //     sf::Vector2f ent_pos = sf::Vector2f(250.0f, 50.0f-(i*12));
-    //     EntityManager::entman.Add(
-    //         EntityFactory::CreateRectEntity("Dynamic Box", this->gameWorld.worldId, ent_pos, ent_size,
-    //                 sf::Color{r,g,b}, DYNAMIC_BODY, USE_PIXEL_SCALE)
-    //     );
-
-    //     b2Vec2 circle_pos = b2Vec2{15, 50.0f-(i*3)};
-    //     float circle_radius = 5; // 2m in radius
-    //     EntityManager::entman.Add(
-    //         EntityFactory::CreateCircleEntity("Dynamic Circle", this->gameWorld.worldId, circle_pos, circle_radius,
-    //                 sf::Color(r,g,b), DYNAMIC_BODY, USE_METER_SCALE)
-    //     );
-    // }
 
 
     // // Load ground
