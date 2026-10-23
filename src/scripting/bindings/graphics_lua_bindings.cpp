@@ -42,6 +42,7 @@ void GraphicsLuaBindings::RegisterColor(sol::state& lua)
     );
 }
 
+
 void GraphicsLuaBindings::Register(sol::state &lua)
 {
     RegisterColor(lua);

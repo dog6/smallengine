@@ -7,10 +7,12 @@ namespace sg::Scripting::Bindings {
 
     class CoreLuaBindings : public LuaBindings {
 
-            static void RegisterVec2(sol::state& lua);
-            static void RegisterUVec2(sol::state& lua);
-            static void RegisterVec2f(sol::state& lua);
-            static void RegisterMathFunctions(sol::state& lua);
+            void RegisterVec2(sol::state& lua);
+            void RegisterUVec2(sol::state& lua);
+            void RegisterVec2f(sol::state& lua);
+            void RegisterMathFunctions(sol::state& lua);
+            void RegisterGameWindow(sol::state& lua);
+
         public:
             void Register(sol::state& lua) override;
 

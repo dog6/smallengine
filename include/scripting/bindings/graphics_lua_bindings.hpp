@@ -8,6 +8,7 @@ namespace sg::Scripting::Bindings {
     class GraphicsLuaBindings : public LuaBindings {
 
             void RegisterColor(sol::state& lua);
+
         public:
             void Register(sol::state& lua) override;
 

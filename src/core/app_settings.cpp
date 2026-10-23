@@ -1,6 +1,6 @@
 #include <iostream>
 #include <toml++/toml.hpp>
-#include "core/settings.hpp"
+#include "core/app_settings.hpp"
 #include <filesystem>
 #include <string>
 #include <spdlog/spdlog.h>
@@ -8,7 +8,7 @@
 using namespace sg::Core;
 
 // Read settings from 'settings.toml' file, or use default hard-coded values
-int Settings::ReadSettings()
+int AppSettings::ReadSettings()
 {
     spdlog::info("Trying to read 'settings.toml' file..");
 
@@ -39,8 +39,8 @@ int Settings::ReadSettings()
 
 
         // 3. Set static settings objects (Passes copies or references safely)
-        Settings::SetWindowSettings(ws);
-        Settings::SetProgInfo(pi);
+        AppSettings::SetWindowSettings(ws);
+        AppSettings::SetProgInfo(pi);
 
     } 
     catch (const toml::parse_error& err) {
@@ -64,8 +64,8 @@ int Settings::ReadSettings()
         ws.max_framerate = 60;
 
         // 3. Set static settings objects (Passes copies or references safely)
-        Settings::SetWindowSettings(ws);
-        Settings::SetProgInfo(pi);
+        AppSettings::SetWindowSettings(ws);
+        AppSettings::SetProgInfo(pi);
 
         return -2;
     }
@@ -76,19 +76,19 @@ int Settings::ReadSettings()
 
 
 // Window Settings
-int Settings::SetWindowSettings(const WindowSettings &ws) { 
+int AppSettings::SetWindowSettings(const WindowSettings &ws) { 
     if (&ws == nullptr) return -1;
-    Settings::window = ws;
+    AppSettings::window = ws;
     return 0;
 }
 
-struct WindowSettings* Settings::GetWindowSettings() { return &Settings::window; }
+struct WindowSettings* AppSettings::GetWindowSettings() { return &AppSettings::window; }
 
 // Program Info
-int Settings::SetProgInfo(const ProgInfo &pi) { 
+int AppSettings::SetProgInfo(const ProgInfo &pi) { 
     if (&pi == nullptr) return -1;
-    Settings::proginfo = pi;
+    AppSettings::proginfo = pi;
     return 0;
 }
 
-struct ProgInfo* Settings::GetProgInfo() { return &Settings::proginfo; }
+struct ProgInfo* AppSettings::GetProgInfo() { return &AppSettings::proginfo; }

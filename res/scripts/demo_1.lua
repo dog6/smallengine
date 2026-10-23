@@ -2,11 +2,11 @@
 -- Builds a pyramid of blocks. Then circles fall on it like rain.
 -- The Y axis points down: a smaller Y value is higher on the screen.
 
-local world_id = game_world_id   -- b2WorldId. C++ must set this value.
-local manager  = Entman          -- EntityManager usertype. Use a dot, not a colon.
+local world_id = world_id   -- b2WorldId. C++ must set this value.
+local manager  = Entman          -- EntityManager usertype.
 
 assert(type(world_id) == "userdata",
-    "game_world_id must be a b2WorldId value, not " .. type(world_id))
+    "_world_id must be a b2WorldId value, not " .. type(world_id))
 assert(manager ~= nil, "Entman is nil")
 
 -- Settings (all values are in meters)
@@ -17,9 +17,9 @@ local BASE_COUNT    = 8      -- number of blocks in the bottom row
 local BLOCK_SIZE    = 1.0
 local BLOCK_GAP     = 0.02   -- small gap. It prevents overlap at the start.
 
-local RAIN_COUNT    = 1500     -- number of circles
-local RAIN_MIN_R    = 2   -- smallest circle radius
-local RAIN_MAX_R    = 5    -- largest circle radius
+local RAIN_COUNT    = 1500   -- number of circles
+local RAIN_MIN_R    = 2      -- smallest circle radius
+local RAIN_MAX_R    = 5      -- largest circle radius
 local RAIN_SPREAD   = 9.0    -- circles fall within CENTER_X +/- this value
 local RAIN_START_Y  = -5.0   -- height of the first circle (above the screen)
 local RAIN_STEP_Y   = 1.5    -- height between circles

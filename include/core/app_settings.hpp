@@ -3,10 +3,10 @@
 
 namespace sg::Core {
 
-    class Settings {
+    class AppSettings {
 
         private:
-            static Settings& Instance;
+            static AppSettings& Instance;
             inline static ProgInfo proginfo;
             inline static WindowSettings window;
 

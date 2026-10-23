@@ -34,7 +34,8 @@ void CoreLuaBindings::RegisterUVec2(sol::state& lua)
 void CoreLuaBindings::RegisterVec2f(sol::state& lua)
 {
     lua.new_usertype<vec2f>("vec2f",
-        sol::constructors<vec2f(), vec2f(float, float)>(),
+        sol::call_constructor, sol::constructors<vec2f(), vec2f(float, float)>(),
+        "new",                 sol::constructors<vec2f(), vec2f(float, float)>(),
         "x", &vec2f::x,
         "y", &vec2f::y,
 
@@ -63,17 +64,44 @@ void CoreLuaBindings::RegisterMathFunctions(sol::state& lua)
     smath["PIXELS_PER_METER"] = PIXELS_PER_METER;
 }
 
+void CoreLuaBindings::RegisterGameWindow(sol::state &lua)
+{
+     lua.new_usertype<GameWindow>("GameWindow",
+        // Read-only access to the resolution.
+        "resolution", sol::readonly(&GameWindow::resolution),
+
+        // Window functions
+        "is_open", [](GameWindow& gw) {
+            return gw.window.isOpen();
+        },
+        "close", [](GameWindow& gw) {
+            gw.window.close();
+        },
+        "set_title", [](GameWindow& gw, const std::string& title) {
+            gw.window.setTitle(title);
+        },
+        "set_vsync", [](GameWindow& gw, bool enabled) {
+            gw.window.setVerticalSyncEnabled(enabled);
+        },
+        "set_framerate_limit", [](GameWindow& gw, unsigned int limit) {
+            gw.window.setFramerateLimit(limit);
+        }
+
+     );
+}
+
 void CoreLuaBindings::Register(sol::state& lua)
 {
     RegisterVec2(lua);
     RegisterUVec2(lua);
     RegisterVec2f(lua);
     RegisterMathFunctions(lua);
-
+    RegisterGameWindow(lua);
     lua.new_usertype<b2WorldId>("b2WorldId", sol::no_constructor);
-    lua["game_world_id"] = sg::Game::GetInstance()->GetB2WorldId();
-    if (auto* game = sg::Game::GetInstance()) {
-        lua["game_world_id"] = game->GetB2WorldId();
-    }
+    lua["world_id"] = sg::Game::GetPhysics().world.worldId;
+    lua["game_window"] = &sg::Game::GetInstance()->GetWindow();   // see the note below
+    // if (auto* game = sg::Game::GetInstance()) {
+    //     lua["game_world_id"] = game->GetB2WorldId();
+    // }
 
 }
