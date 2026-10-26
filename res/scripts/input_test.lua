@@ -5,23 +5,22 @@ local RECT_SIZE = vec2f(50, 50)
 local myRectangle = nil
 
 function Init()
-    -- AddRect returns the created entity.
-    -- Coordinates and size are specified in pixels.
+    -- Create the player using pixel-based coordinates.
     myRectangle = Entman.AddRect(
         "Player1",
         world_id,
         vec2f(400, 300),
         RECT_SIZE,
         ColorRGB(255, 0, 0),
-        true,  -- Static body
-        false   -- Pixel-based creation coordinates
+        true, -- Dynamic body
+        false  -- Pixel-based creation coordinates
     )
-    
+
     if not myRectangle then
         print("Failed to create rectangle entity.")
         return
     end
-    
+
     print("Player initialized.")
 end
 
@@ -29,23 +28,22 @@ function Update(dt)
     if not myRectangle then
         return
     end
-    
-    local pos = myRectangle:GetPosition()
-    
-    -- Read movement input.
+
+    -- Read continuous movement input.
     local moveX = Keyboard.Axis(Key.A, Key.D, 1)
     local moveY = Keyboard.Axis(Key.W, Key.S, 1)
-    
-    -- Normalize diagonal movement so it isn't faster.
+
+    -- Normalize diagonal movement.
     if moveX ~= 0 and moveY ~= 0 then
         local diagonalScale = 0.70710678
         moveX = moveX * diagonalScale
         moveY = moveY * diagonalScale
     end
-    
+
+    local pos = myRectangle:GetPosition()
     local resolution = game_window.resolution
-    
-    -- Clamp the rectangle's center to keep it on-screen.
+
+    -- Keep the rectangle's center within the screen.
     local halfWidth = RECT_SIZE.x * 0.5
     local halfHeight = RECT_SIZE.y * 0.5
 
@@ -60,14 +58,16 @@ function Update(dt)
 
     myRectangle:SetPosition(pos)
 
-    -- Quit.
-    if Keyboard.AnyDown(Key.Escape, Key.Q) then
+    -- Quit only once per key press.
+    if Keyboard.IsPressed(Key.Escape)
+        or Keyboard.IsPressed(Key.Q) then
         print("Quitting the game.")
         game_window:close()
     end
 
-    -- Serve action.
-    if Keyboard.AnyDown(Key.Space, Key.Enter) then
+    -- Trigger the serve action only once per key press.
+    if Keyboard.IsPressed(Key.Space)
+        or Keyboard.IsPressed(Key.Enter) then
         print("Spacebar or Enter pressed!")
     end
 end

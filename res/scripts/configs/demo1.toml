@@ -1,8 +1,8 @@
 [[scripts]]
-path = "D:/Projects/CPP/smallgame/res/scripts/input_test.lua"
+path = "D:/Projects/CPP/smallgame/res/scripts/velocity_test.lua"
 
 [[scripts]]
-path = "D:/Projects/CPP/smallgame/res/scripts/pyramid_rain.lua"
+path = "D:/Projects/CPP/smallgame/res/scripts/stress_test.lua"
 
 [[scripts]]
 path = "D:/Projects/CPP/smallgame/res/scripts/wall_border.lua"

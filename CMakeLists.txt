@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 4.1.1)
 project(smallgame LANGUAGES C CXX )
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -10,6 +14,12 @@ set(INCLUDE include/)
 file(GLOB_RECURSE INCLUDE_FILES ${INCLUDE}/*)
 
 include(FetchContent)
+
+set(BOX2D_SAMPLES OFF CACHE BOOL "" FORCE)
+set(BOX2D_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX2D_BENCHMARKS OFF CACHE BOOL "" FORCE)
+set(BOX2D_DOCS OFF CACHE BOOL "" FORCE)
+
 FetchContent_Declare(BOX2D
     GIT_REPOSITORY https://github.com/erincatto/box2d
     GIT_TAG v3.1.1
@@ -60,8 +70,33 @@ FetchContent_Declare(SPDLOG
     GIT_REPOSITORY https://github.com/gabime/spdlog
     GIT_TAG v1.17.0
     GIT_SHALLOW ON)
-
 FetchContent_MakeAvailable(SPDLOG)
+
+# Dear ImGui
+FetchContent_Declare(
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.9b
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(imgui)
+
+# ImGui-SFML needs the root directory containing imgui.h.
+FetchContent_GetProperties(imgui SOURCE_DIR IMGUI_DIR)
+
+# Use the SFML target already fetched above.
+set(IMGUI_SFML_FIND_SFML OFF CACHE BOOL "" FORCE)
+
+# ImGui-SFML backend
+FetchContent_Declare(
+    imgui-sfml
+    GIT_REPOSITORY https://github.com/SFML/imgui-sfml.git
+    GIT_TAG master
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(imgui-sfml)
 
 add_compile_definitions(SFML_NO_JOYSTICK)
 
@@ -75,4 +110,5 @@ target_link_libraries(smallgame PRIVATE
     tomlplusplus::tomlplusplus
     spdlog::spdlog
     sol2_headers
+    ImGui-SFML::ImGui-SFML
 )

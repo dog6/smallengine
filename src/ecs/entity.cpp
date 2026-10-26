@@ -92,6 +92,55 @@ sg::Core::vec2f Entity::GetPosition()
     };
 }
 
+void Entity::SetLinearVelocity(sg::Core::vec2f velocity)
+{
+    auto* physComp =
+        GetComponent<sg::ECS::Components::PhysicsComponent>();
+
+    if (!physComp)
+    {
+        spdlog::warn(
+            "No physics component attached to entity '{}'",
+            GetName()
+        );
+        return;
+    }
+
+    b2BodyId bid = physComp->GetBody().GetBodyId();
+
+    // Lua supplies pixels per second; Box2D expects meters per second.
+    const b2Vec2 box2DVelocity{
+        velocity.x / PIXELS_PER_METER,
+        velocity.y / PIXELS_PER_METER
+    };
+
+    b2Body_SetLinearVelocity(bid, box2DVelocity);
+}
+
+sg::Core::vec2f Entity::GetLinearVelocity()
+{
+    auto* physComp =
+        GetComponent<sg::ECS::Components::PhysicsComponent>();
+
+    if (!physComp)
+    {
+        spdlog::warn(
+            "No physics component attached to entity '{}'",
+            GetName()
+        );
+        return { 0, 0 };
+    }
+
+    b2BodyId bid = physComp->GetBody().GetBodyId();
+    const b2Vec2 velocity = b2Body_GetLinearVelocity(bid);
+
+    // Box2D supplies meters per second; Lua expects pixels per second.
+    return {
+        velocity.x * PIXELS_PER_METER,
+        velocity.y * PIXELS_PER_METER
+    };
+}
+
 void Entity::Update()
     {
         for (auto &[type, c] : components)

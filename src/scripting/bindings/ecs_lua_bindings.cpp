@@ -37,7 +37,9 @@ static void RegisterEntity(sol::state& lua)
             return WrapComponent(s, name, self.GetComponentByName(name));
         },
         "SetPosition", &Entity::SetPosition,
-        "GetPosition", &Entity::GetPosition
+        "GetPosition", &Entity::GetPosition,
+        "SetLinearVelocity", &Entity::SetLinearVelocity,
+        "GetLinearVelocity", &Entity::GetLinearVelocity
     );
 }
 

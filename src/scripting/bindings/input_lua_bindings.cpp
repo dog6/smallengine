@@ -17,6 +17,8 @@ void BindDigitalDevice(sol::table& table)
 {
     table.set_function("IsDown", &Device::IsDown);
     table.set_function("IsUp", &Device::IsUp);
+    table.set_function("IsPressed", &Device::IsPressed);
+    table.set_function("IsReleased", &Device::IsReleased);
 
     table.set_function("AnyDown", [](sol::variadic_args codes) {
         for (auto code : codes) {

@@ -17,9 +17,9 @@ local BASE_COUNT    = 8      -- number of blocks in the bottom row
 local BLOCK_SIZE    = 3.0
 local BLOCK_GAP     = 0.04   -- small gap. It prevents overlap at the start.
 
-local RAIN_COUNT    = 1500   -- number of circles
-local RAIN_MIN_R    = 3      -- smallest circle radius
-local RAIN_MAX_R    = 7      -- largest circle radius
+local RAIN_COUNT    = 3000   -- number of circles
+local RAIN_MIN_R    = 2      -- smallest circle radius
+local RAIN_MAX_R    = 4      -- largest circle radius
 local RAIN_SPREAD   = 9.0    -- circles fall within CENTER_X +/- this value
 local RAIN_START_Y  = -5.0   -- height of the first circle (above the screen)
 local RAIN_STEP_Y   = 1.5    -- height between circles

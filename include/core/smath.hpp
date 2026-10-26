@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <box2d/box2d.h>
 
-#define PIXELS_PER_METER 12 //42 // number of pixels per meter
+#define PIXELS_PER_METER 24 //42 // number of pixels per meter
 
 namespace sg::Core {
 

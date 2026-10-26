@@ -54,6 +54,6 @@ void Renderer::Render(sf::RenderWindow *window,
     if (ents.size() > 0) RenderEntitites(window, ents);
 
     // Display window
-    window->display();
+    // window->display();
 
 }

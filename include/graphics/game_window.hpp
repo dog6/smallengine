@@ -13,4 +13,5 @@ struct GameWindow {
 
     sg::Core::uvec2 resolution;
     void Render(const std::vector<std::unique_ptr<sg::ECS::Entity>>& ents);
+    void Display();
 };

@@ -14,3 +14,8 @@ void GameWindow::Render(const std::vector<std::unique_ptr<sg::ECS::Entity>> &ent
 {
     renderer.Render(&window, ents);
 }
+
+void GameWindow::Display()
+{
+    this->window.display();
+}

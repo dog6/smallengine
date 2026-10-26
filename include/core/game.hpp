@@ -3,6 +3,7 @@
 #include "core/app_settings.hpp"
 #include "physics/physics_manager.hpp"
 #include "graphics/game_window.hpp"
+#include "editor/editor_manager.hpp"
 
 namespace sg {
     class Game {
@@ -13,6 +14,10 @@ namespace sg {
             inline static PhysicsManager physics;
             inline static GameWindow* game_window;
             static sg::Core::uvec2 screen_resolution;
+            sg::Editor::EditorUIManager editorUIManager;
+            sf::Clock m_frameClock;
+            float m_fps = 0.0f;
+            float m_physicsStepMs = 0.0f;
 
             // Called every frame
             void Run(); // game loop

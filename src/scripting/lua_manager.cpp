@@ -95,11 +95,11 @@ void LuaManager::Update(float deltaTime)
         if (!obj.valid() || obj.get_type() == sol::type::nil) {
             sol::object upper = s->lua["Update"];
 
-            spdlog::warn(
-                "No global 'update' in '{}'. Uppercase 'Update' exists: {}",
-                s->filepath,
-                upper.valid() && upper.get_type() == sol::type::function
-            );
+            // spdlog::warn(
+            //     "No global 'update' in '{}'. Uppercase 'Update' exists: {}",
+            //     s->filepath,
+            //     upper.valid() && upper.get_type() == sol::type::function
+            // );
             continue;
         }
 

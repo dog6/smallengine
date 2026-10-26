@@ -73,6 +73,9 @@ namespace sg::ECS {
             
             void SetPosition(sg::Core::vec2f pos);
             sg::Core::vec2f GetPosition();
+            void SetLinearVelocity(sg::Core::vec2f velocity);
+            sg::Core::vec2f GetLinearVelocity();
+            
             void Update();
 
         private:

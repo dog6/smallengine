@@ -14,9 +14,18 @@
 #include "scripting/lua_toml.hpp"
 #include "core/smath.hpp"
 
+#include "input/mouse.hpp"
+#include "input/keyboard.hpp"
+
+
+#include <imgui.h>
+#include <imgui-sfml.h>
+#include <chrono>
+
 using namespace sg;
 using namespace sg::Core;
 using namespace sg::Physics;
+using namespace sg::Input;
 using namespace sg::ECS;
 using namespace sg::ECS::Components;
 using namespace sg::Graphics;
@@ -43,13 +52,17 @@ void Game::Run()
             this->Start();
         }
 
-        // Update game logic
         this->Update();
 
-        // Draw all drawables added to renderer
         game_window->Render(EntityManager::entman);
-        // game_window->Render(EntityManager::entman)
- 
+        
+        // Draw editor windows after the game scene.
+        editorUIManager.Draw();
+        ImGui::SFML::Render(game_window->window);
+        
+        game_window->Display();
+        // window->display();
+
         frameNumber++;
     }
 }
@@ -86,6 +99,13 @@ void Game::Load()
     WindowSettings* ws = this->settings.GetWindowSettings();
     Game::game_window = new GameWindow(ws);
 
+    if (!ImGui::SFML::Init(game_window->window))
+    {
+        spdlog::error("Failed to initialize ImGui-SFML");
+        return;
+    }
+
+
     // Load multiple lua scripts specified inside a .TOML file
     LuaManager::LoadFromTOML("D:/Projects/CPP/smallgame/res/scripts/configs/demo1.toml");
     
@@ -101,17 +121,87 @@ void Game::Load()
 // Called every frame before renderer is called
 void Game::Update()
 {
-    // Poll for window and input eventss
-    while (const std::optional event = game_window->window.pollEvent()) {
-        if (event->is<sf::Event::Closed>()) {
-            game_window->window.close(); // Close the window
+    using Key = sf::Keyboard::Key;
+    using Button = sf::Mouse::Button;
+
+    // Measure real elapsed frame time.
+    const sf::Time frameDelta = m_frameClock.restart();
+    const float deltaSeconds = frameDelta.asSeconds();
+
+    if (deltaSeconds > 0.0f)
+    {
+        const float instantFPS = 1.0f / deltaSeconds;
+
+        // Smooth the FPS reading so it doesn't jump around as much.
+        m_fps = (m_fps == 0.0f)
+            ? instantFPS
+            : m_fps * 0.9f + instantFPS * 0.1f;
+    }
+
+    Keyboard::BeginFrame();
+    Mouse::BeginFrame();
+
+    while (const std::optional event =
+        game_window->window.pollEvent())
+    {
+        ImGui::SFML::ProcessEvent(game_window->window, *event);
+
+        if (event->is<sf::Event::Closed>())
+        {
+            game_window->window.close();
+        }
+        else if (const auto* e =
+            event->getIf<sf::Event::KeyPressed>())
+        {
+            Keyboard::OnPressed(e->code);
+        }
+        else if (const auto* e =
+            event->getIf<sf::Event::KeyReleased>())
+        {
+            Keyboard::OnReleased(e->code);
+        }
+        else if (const auto* e =
+            event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            Mouse::OnPressed(e->button);
+        }
+        else if (const auto* e =
+            event->getIf<sf::Event::MouseButtonReleased>())
+        {
+            Mouse::OnReleased(e->button);
+        }
+        else if (event->is<sf::Event::FocusLost>())
+        {
+            Keyboard::ResetEventState();
+            Mouse::ResetEventState();
         }
     }
 
-    // EntityManager::entman.Update();
     EntityManager::Update();
     LuaManager::Update(DELTA_TIME);
+
+    // Measure only the physics update.
+    const auto physicsStart = std::chrono::steady_clock::now();
+
     PhysicsManager::Update(DELTA_TIME);
+
+    const auto physicsEnd = std::chrono::steady_clock::now();
+
+    m_physicsStepMs =
+        std::chrono::duration<float, std::milli>(
+            physicsEnd - physicsStart
+        ).count();
+
+    // Send live values to the performance window.
+    sg::Editor::PerformanceStats stats{};
+    stats.fps = m_fps;
+    stats.entityCount = EntityManager::entman.size();
+    stats.physicsStepMs = m_physicsStepMs;
+
+    editorUIManager.SetPerformanceStats(stats);
+
+    // ImGui receives real frame time, not the fixed simulation timestep.
+    ImGui::SFML::Update(game_window->window, frameDelta);
 }
 
 // Called on first game loop
