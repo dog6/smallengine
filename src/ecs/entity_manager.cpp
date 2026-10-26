@@ -21,11 +21,11 @@ std::size_t EntityManager::RemoveEntity(int index)
     return  sizeof(it)/sizeof(Entity);
 }
 
-void EntityManager::AddEntity(std::unique_ptr<Entity> ent)
+std::unique_ptr<Entity>& EntityManager::AddEntity(std::unique_ptr<Entity> ent)
 {
     spdlog::info("Adding entity {}", ent.get()->GetName());
     ent->SetId(entman.size()+1);
-    EntityManager::entman.emplace_back(std::move(ent));
+    return EntityManager::entman.emplace_back(std::move(ent));
 }
 
 Entity *sg::ECS::EntityManager::GetEntity(int entity_id)

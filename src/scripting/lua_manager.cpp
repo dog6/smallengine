@@ -31,9 +31,11 @@ void sg::Scripting::LuaManager::LoadFromTOML(std::string config_path)
 
 }
 
-std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
+
+std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char* filepath)
 {
     spdlog::info("Loading lua script '{}'", filepath);
+
     auto script = std::make_unique<LuaScript>();
     script->filepath = filepath;
 
@@ -45,45 +47,84 @@ std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
         sol::lib::string
     );
 
-    spdlog::info("Binding script '{}'..", script->filepath.c_str());
+    spdlog::info("Binding script '{}'..", filepath);
     BindToLua(script->lua);
-    // s_scripts.emplace_back(*script.get());
-   
+
     try {
         auto result = script->lua.script_file(filepath);
+
         if (!result.valid()) {
             sol::error err = result;
-            spdlog::error("Lua script error in '{}\nERROR: {}",filepath, err.what());
+            spdlog::error(
+                "Lua script error in '{}': {}",
+                filepath,
+                err.what()
+            );
             return nullptr;
         }
     }
     catch (const sol::error& e) {
-        spdlog::error("Exception loading Lua script '{}': {}", filepath, e.what());
+        spdlog::error(
+            "Exception loading Lua script '{}': {}",
+            filepath,
+            e.what()
+        );
         return nullptr;
     }
 
-    return script; // The compiler moves it. Do not write std::move here.
+    // Transfer ownership to the manager only after successful loading.
+    s_scripts.push_back(std::move(script));
+
+    // The manager now owns the script.
+    return nullptr;
 }
+
 
 void LuaManager::Update(float deltaTime)
 {
-    
-    if (s_scripts.size() <= 0) return;
-
-    for (auto& script : s_scripts){
-        auto s = script.get(); // get unique ptr reference
-
-        sol::protected_function updateFunc = s->lua["update"];
-        if (updateFunc.valid()) {
-            auto result = updateFunc(deltaTime);
-            if (!result.valid()) {
-                sol::error err = result;
-                spdlog::error("Lua Update Error in '{}'\nERROR: {}", s->filepath, err.what());
-            }
-        }
+    if (s_scripts.empty()) {
+        spdlog::warn("LuaManager::Update: No scripts loaded");
+        return;
     }
 
+    for (auto& script : s_scripts) {
+        auto* s = script.get();
 
+        sol::object obj = s->lua["update"];
+
+        if (!obj.valid() || obj.get_type() == sol::type::nil) {
+            sol::object upper = s->lua["Update"];
+
+            spdlog::warn(
+                "No global 'update' in '{}'. Uppercase 'Update' exists: {}",
+                s->filepath,
+                upper.valid() && upper.get_type() == sol::type::function
+            );
+            continue;
+        }
+
+        if (obj.get_type() != sol::type::function) {
+            spdlog::error(
+                "'update' exists but is not a function in '{}'",
+                s->filepath
+            );
+            continue;
+        }
+
+        sol::protected_function updateFunc =
+            obj.as<sol::protected_function>();
+
+        auto result = updateFunc(deltaTime);
+
+        if (!result.valid()) {
+            sol::error err = result;
+            spdlog::error(
+                "Lua Update Error in '{}': {}",
+                s->filepath,
+                err.what()
+            );
+        }
+    }
 }
 
 void LuaManager::BindToLua(sol::state &lua)

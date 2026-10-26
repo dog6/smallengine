@@ -1,4 +1,7 @@
 [[scripts]]
+path = "D:/Projects/CPP/smallgame/res/scripts/input_test.lua"
+
+[[scripts]]
 path = "D:/Projects/CPP/smallgame/res/scripts/pyramid_rain.lua"
 
 [[scripts]]

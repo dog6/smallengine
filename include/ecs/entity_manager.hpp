@@ -25,7 +25,7 @@ namespace sg::ECS {
             // Returns new entity size_t if item removed, otherwise returns -1
             static std::size_t RemoveEntity(int index);
             
-            static void AddEntity(std::unique_ptr<Entity> ent);
+            static std::unique_ptr<Entity>& AddEntity(std::unique_ptr<Entity> ent);
             
             static Entity* GetEntity(int entity_id);
             static bool HasEntity(int entity_id);

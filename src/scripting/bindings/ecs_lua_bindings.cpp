@@ -30,15 +30,17 @@ static sol::object WrapComponent(sol::this_state s, const std::string& name, Com
 static void RegisterEntity(sol::state& lua)
 {
     lua.new_usertype<Entity>("Entity",
-        // "name", Entity::GetName(),
         "AddComponent", [](Entity& self, const std::string& name, sol::this_state s) {
             return WrapComponent(s, name, self.AddComponentByName(name));
         },
         "GetComponent", [](Entity& self, const std::string& name, sol::this_state s) {
             return WrapComponent(s, name, self.GetComponentByName(name));
-        }
+        },
+        "SetPosition", &Entity::SetPosition,
+        "GetPosition", &Entity::GetPosition
     );
 }
+
 
 static void RegisterEntityManager(sol::state& lua)
 {
@@ -49,32 +51,60 @@ static void RegisterEntityManager(sol::state& lua)
 
         "AddCircle", sol::overload(
             [](std::string name, b2WorldId w, vec2f pos, float radius,
-               ColorRGB col, bool isStatic, bool useMeters) {
-                EntityManager::AddEntity(EntityFactory::CreateCircleEntity(
-                    std::move(name), w, pos, radius, col.toSFColor(), isStatic, useMeters));
-                
+               ColorRGB col, bool isStatic, bool useMeters) -> Entity*
+            {
+                auto& stored = EntityManager::AddEntity(
+                    EntityFactory::CreateCircleEntity(
+                        std::move(name), w, pos, radius,
+                        col.toSFColor(), isStatic, useMeters
+                    )
+                );
+
+                return stored.get();
             },
             [](std::string name, b2WorldId w, vec2f pos, float radius,
-               ColorRGBA col, bool isStatic, bool useMeters) {
-                EntityManager::AddEntity(EntityFactory::CreateCircleEntity(
-                    std::move(name), w, pos, radius, col.toSFColor(), isStatic, useMeters));
+               ColorRGBA col, bool isStatic, bool useMeters) -> Entity*
+            {
+                auto& stored = EntityManager::AddEntity(
+                    EntityFactory::CreateCircleEntity(
+                        std::move(name), w, pos, radius,
+                        col.toSFColor(), isStatic, useMeters
+                    )
+                );
+
+                return stored.get();
             }
         ),
 
         "AddRect", sol::overload(
             [](std::string name, b2WorldId w, vec2f pos, vec2f size,
-               ColorRGB col, bool isStatic, bool useMeters) {
-                EntityManager::AddEntity(EntityFactory::CreateRectEntity(
-                    std::move(name), w, pos, size, col.toSFColor(), isStatic, useMeters));
+               ColorRGB col, bool isStatic, bool useMeters) -> Entity*
+            {
+                auto& stored = EntityManager::AddEntity(
+                    EntityFactory::CreateRectEntity(
+                        std::move(name), w, pos, size,
+                        col.toSFColor(), isStatic, useMeters
+                    )
+                );
+
+                return stored.get();
             },
             [](std::string name, b2WorldId w, vec2f pos, vec2f size,
-               ColorRGBA col, bool isStatic, bool useMeters) {
-                EntityManager::AddEntity(EntityFactory::CreateRectEntity(
-                    std::move(name), w, pos, size, col.toSFColor(), isStatic, useMeters));
+               ColorRGBA col, bool isStatic, bool useMeters) -> Entity*
+            {
+                auto& stored = EntityManager::AddEntity(
+                    EntityFactory::CreateRectEntity(
+                        std::move(name), w, pos, size,
+                        col.toSFColor(), isStatic, useMeters
+                    )
+                );
+
+                return stored.get();
             }
         )
     );
 }
+
 
 static void RegisterEntityFactory(sol::state& lua)
 {
