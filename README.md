@@ -1,6 +1,6 @@
 # 2D Lua Engine written in C++
-<img width="1275" height="708" alt="image" src="https://github.com/user-attachments/assets/20b7d097-2d12-4d15-9df3-708109a97903" />
-<hr/>
+<img width="1274" height="716" alt="image" src="https://github.com/user-attachments/assets/c9afe1a1-f55c-4dca-9f06-adb7cafe9e53" />
+
 
 ### Uses:
 ```
