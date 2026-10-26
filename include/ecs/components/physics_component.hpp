@@ -3,7 +3,7 @@
 #include <memory>
 #include "ecs/component.hpp"
 #include "physics/physicsbody.hpp"
-
+#include "core/smath.hpp"
 
 namespace sg::ECS::Components {
     // Owns a physics body.
@@ -19,6 +19,9 @@ namespace sg::ECS::Components {
 
         sg::Physics::PhysicsBody& GetBody() { return *body; }
         void Update();
+        void SetPosition(sg::Core::vec2f pos);
+        sg::Core::vec2f GetPosition();
+
     private:
         std::unique_ptr<sg::Physics::PhysicsBody> body;
     };

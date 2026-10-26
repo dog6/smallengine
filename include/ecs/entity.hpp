@@ -5,6 +5,8 @@
 #include <typeindex>
 #include <vector>
 #include "ecs/component.hpp"
+#include <spdlog/spdlog.h>
+#include "core/smath.hpp"
 
 namespace sg::ECS {
 
@@ -61,11 +63,21 @@ namespace sg::ECS {
                 return false;
             }
 
+            void SetId(int id) {
+                this->id = id;
+            }
 
+            int GetId() {
+                return this->id;
+            }
+            
+            void SetPosition(sg::Core::vec2f pos);
+            sg::Core::vec2f GetPosition();
             void Update();
 
         private:
             std::string name;
+            uint32_t id; // max of uint32_t is 4,294,967,295
             std::vector<std::pair<std::type_index, std::unique_ptr<sg::ECS::Component>>> components;
             
     };

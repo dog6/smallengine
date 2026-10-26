@@ -47,7 +47,8 @@ void Game::Run()
         this->Update();
 
         // Draw all drawables added to renderer
-        game_window->Render(EntityManager::entman.GetAll());
+        game_window->Render(EntityManager::entman);
+        // game_window->Render(EntityManager::entman)
  
         frameNumber++;
     }
@@ -67,7 +68,8 @@ void Game::Init()
     spdlog::info("Printing settings..\nVersion: {}\nStarted on: {}\nAuthor: {}\n", pi->version, pi->started_on, pi->author);
 
     // Create list to store entitites
-    EntityManager::entman = List<Entity>();
+    // EntityManager::entman = List<Entity>();
+    EntityManager::entman = std::vector<std::unique_ptr<sg::ECS::Entity>>();
 
     spdlog::info("Game finished initializing!");
 
@@ -106,7 +108,8 @@ void Game::Update()
         }
     }
 
-    EntityManager::entman.Update();
+    // EntityManager::entman.Update();
+    EntityManager::Update();
     LuaManager::Update(DELTA_TIME);
     PhysicsManager::Update(DELTA_TIME);
 }

@@ -1,18 +1,21 @@
 #pragma once
 
 #include <memory>
-#include <vector>
-#include <unordered_set>
+// #include <vector>
+#include <unordered_map>
 
-#include "core/list.hpp"
 #include "ecs/entity.hpp"
+#include <bits/stdc++.h>
 
 namespace sg::ECS {
 
     class EntityManager {
-        
+            
         public:
-            inline static List<sg::ECS::Entity> entman;
+        
+            inline static std::vector<std::unique_ptr<sg::ECS::Entity>> entman;
+            // inline static std::unordered_map<std::hash<std::unique_ptr<sg::ECS::Entity>>, std::unique_ptr<sg::ECS::Entity>> entman;
+
 
             // Creates new entity and stores in entman
             // Returns pointer to newly created entity
@@ -21,6 +24,13 @@ namespace sg::ECS {
             // Removes an entity from the entman via index
             // Returns new entity size_t if item removed, otherwise returns -1
             static std::size_t RemoveEntity(int index);
+            
+            static void AddEntity(std::unique_ptr<Entity> ent);
+            
+            static Entity* GetEntity(int entity_id);
+            static bool HasEntity(int entity_id);
+
+            static void Update();
 
     };
 

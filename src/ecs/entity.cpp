@@ -1,6 +1,7 @@
 #include "ecs/entity.hpp"
 #include "ecs/component_type.hpp"
 #include <spdlog/spdlog.h>
+#include "core/smath.hpp"
 
 using namespace sg::ECS;
 
@@ -38,10 +39,52 @@ Entity::~Entity() = default;
         return comp;
     }
 
+    void sg::ECS::Entity::SetPosition(sg::Core::vec2f pos)
+    {
+        auto* drawableComp = this->GetComponent<sg::ECS::Components::DrawableComponent>();
+        if (drawableComp != nullptr) {
+            
+            sf::Drawable* d = drawableComp->GetDrawable(); 
+            if (auto* physComp = this->GetComponent<sg::ECS::Components::PhysicsComponent>()) {
 
-void Entity::Update()
-{
-    for (auto& [type, c] : components) {
-        c->Update(*this);
+                if (auto* tf = drawableComp->GetTransformable()) {
+                    b2BodyId bid = physComp->GetBody().GetBodyId();
+                    sg::Core::vec2f pos = sg::Core::vec2f(b2Body_GetPosition(bid));
+                    tf->setPosition(pos.toSFML());
+                    tf->setRotation(sf::radians(b2Rot_GetAngle(b2Body_GetRotation(bid))));
+                }
+                
+            }
+
+
+        }
     }
+
+    sg::Core::vec2f sg::ECS::Entity::GetPosition()
+    {
+        sg::Core::vec2f result = sg::Core::vec2f(0,0);
+        auto* drawableComp = this->GetComponent<sg::ECS::Components::DrawableComponent>();
+        if (drawableComp != nullptr) {
+            
+            sf::Drawable* d = drawableComp->GetDrawable(); 
+            if (auto* physComp = this->GetComponent<sg::ECS::Components::PhysicsComponent>()) {
+
+                if (auto* tf = drawableComp->GetTransformable()) {
+                    b2BodyId bid = physComp->GetBody().GetBodyId();
+                    result = tf->getPosition();
+                }
+                
+            }
+
+
+        }
+        return result;
+    }
+
+    void Entity::Update()
+    {
+        for (auto &[type, c] : components)
+        {
+            c->Update(*this);
+        }
 }

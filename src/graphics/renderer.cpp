@@ -24,11 +24,13 @@ void sg::Graphics::Renderer::RenderEntitites(sf::RenderWindow *window, const std
 
         // Sync PhysicsComponent (Box2D) position/rotation with DrawableComponent (SFML) position/rotation
         if (auto* physComp = e->GetComponent<sg::ECS::Components::PhysicsComponent>()) {
+
             if (auto* tf = drawableComp->GetTransformable()) {
                 b2BodyId bid = physComp->GetBody().GetBodyId();
                 tf->setPosition(metersToPixels(b2Body_GetPosition(bid)));
                 tf->setRotation(sf::radians(b2Rot_GetAngle(b2Body_GetRotation(bid))));
             }
+            
         }
 
         // Draw to window
