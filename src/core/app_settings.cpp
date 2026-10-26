@@ -14,13 +14,6 @@ int AppSettings::ReadSettings()
 
     try {
 
-        // 1. Get the current working directory as a native path object
-        std::filesystem::path wd = std::filesystem::current_path();
-        spdlog::info("Current Working Directory: {}", wd.string());
-
-        // 2. Safely append the filename using the path separator operator (/)
-        std::filesystem::path settings_path = wd / "/build/bin/settings.toml";
-
         // 3. Pass the path directly to toml::parse_file
         toml::table tbl = toml::parse_file("settings.toml");
 
@@ -36,7 +29,6 @@ int AppSettings::ReadSettings()
         ws.resolution.x = tbl["window"]["resolution"]["x"].value_or<unsigned int>(1280);
         ws.resolution.y = tbl["window"]["resolution"]["y"].value_or<unsigned int>(720);
         ws.max_framerate = tbl["window"]["max_framerate"].value_or<int>(60);
-
 
         // 3. Set static settings objects (Passes copies or references safely)
         AppSettings::SetWindowSettings(ws);

@@ -3,11 +3,13 @@
 This document describes the C++ types and functions that Lua scripts can use.
 The bindings use the sol2 library.
 
-**Version 2.** Changes from version 1:
+**Version 3.** Changes from version 2:
 
-- `vec2`, `uvec2`, and `vec2f` now have a call constructor. You can write `vec2f(x, y)` or `vec2f.new(x, y)`.
-- The global `game_window` is now documented.
-- The registration order and the list of known limits are updated.
+- New section 7 describes the input bindings: `Key`, `MouseButton`, `Keyboard`, and `Mouse`.
+- The registration order includes `InputLuaBindings`.
+- The sections after section 6 have new numbers.
+- The complete example section has a second example that uses input.
+- The list of known limits is updated.
 
 ## 1. Rules for Calling Functions
 
@@ -21,6 +23,8 @@ Lua has two ways to call a function.
 **WARNING**
 Use a dot for `Entman.AddCircle`, `Entman.AddRect`, `EntityFactory.CreateCircleEntity`, and `EntityFactory.CreateRectEntity`. These functions do not accept an object. A colon call gives an argument type error.
 
+Use a dot for all functions in `Keyboard` and `Mouse`. These two tables hold functions only. They have no object.
+
 ## 2. Registration Order
 
 Call the register functions in this order. A type must exist before another binding uses it.
@@ -28,10 +32,11 @@ Call the register functions in this order. A type must exist before another bind
 1. `RegisterVec2`, `RegisterUVec2`, `RegisterVec2f`
 2. `GraphicsLuaBindings::RegisterColor`
 3. `RegisterGameWindow` (uses `uvec2`)
-4. `RegisterEntity`, `RegisterEntityManager`, `RegisterEntityFactory` (use `vec2f`, `ColorRGB`, `ColorRGBA`, and `b2WorldId`)
-5. `RegisterMathFunctions`
-6. Set the global variables (see section 3)
-7. Load the script
+4. `InputLuaBindings::Register` (uses `vec2f` and the game window)
+5. `RegisterEntity`, `RegisterEntityManager`, `RegisterEntityFactory` (use `vec2f`, `ColorRGB`, `ColorRGBA`, and `b2WorldId`)
+6. `RegisterMathFunctions`
+7. Set the global variables (see section 3)
+8. Load the script
 
 **WARNING**
 Set a global variable that holds a C++ object only after the type of that object is registered. If you set the variable first, sol2 gives the object an empty metatable. A later registration does not change it. The script then gives the error `attempt to index a sol.GameWindow* value`.
@@ -172,6 +177,8 @@ The multiplication operator works only with the vector on the left side. `2 * v`
 
 There is no division operator, no negation operator, and no length function.
 
+The C++ struct `vec2f` has more operators (`*` and `/` with a number or a `vec2f`). The Lua binding does not use them yet.
+
 **Example**
 
 ```lua
@@ -310,9 +317,118 @@ The pointer in `game_window` is valid only while the `Game` object and its windo
 
 ---
 
-## 7. Entity Types
+## 7. Input Types
 
-### 7.1 Entity
+The input bindings are in `InputLuaBindings`. They read the state of the keyboard and the mouse at the time of the call. The bindings do not use events.
+
+### 7.1 Key
+
+A read-only table of key names. Each name is a number for the SFML key. Use the name. Do not write the number.
+
+| Group | Names |
+|-------|-------|
+| Letters | `A` to `Z` |
+| Digits | `Num0` to `Num9` |
+| Numeric keypad | `Numpad0` to `Numpad9`, `Add`, `Subtract`, `Multiply`, `Divide` |
+| Function keys | `F1` to `F15` |
+| Arrows | `Left`, `Right`, `Up`, `Down` |
+| Editing | `Escape`, `Space`, `Enter`, `Backspace`, `Tab`, `Insert`, `Delete`, `Home`, `End`, `PageUp`, `PageDown`, `Pause`, `Menu` |
+| Modifiers | `LControl`, `RControl`, `LShift`, `RShift`, `LAlt`, `RAlt`, `LSystem`, `RSystem` |
+| Symbols | `LBracket`, `RBracket`, `Semicolon`, `Comma`, `Period`, `Apostrophe`, `Slash`, `Backslash`, `Grave`, `Equal`, `Hyphen` |
+
+**NOTE**
+These names are for SFML 3. SFML 2 uses different names for a few keys (for example `Return`, `Quote`, `Tilde`, and `Dash`).
+
+**Example**
+
+```lua
+local jump_key = Key.Space
+```
+
+### 7.2 MouseButton
+
+A read-only table of mouse button names.
+
+| Name | Description |
+|------|-------------|
+| `Left` | The left button |
+| `Right` | The right button |
+| `Middle` | The middle button (wheel button) |
+| `Extra1` | The first extra button |
+| `Extra2` | The second extra button |
+
+### 7.3 Keyboard
+
+A table of functions for the keyboard. Use a dot to call each function. Each function that has a `key` argument takes a name from `Key`.
+
+| Function | Arguments | Returns | Description |
+|----------|-----------|---------|-------------|
+| `Keyboard.IsDown(key)` | key | boolean | True if the key is held down. |
+| `Keyboard.IsUp(key)` | key | boolean | True if the key is not held down. |
+| `Keyboard.AnyDown(key, ...)` | one or more keys | boolean | True if at least one of the keys is held down. |
+| `Keyboard.AllDown(key, ...)` | one or more keys | boolean | True if all of the keys are held down. |
+| `Keyboard.Axis(negative, positive, scale)` | two keys, optional number | number | Gives a direction value. See the table below. |
+
+**Axis result**
+
+The `scale` argument is optional. The default value is 1.
+
+| State of the keys | Result |
+|-------------------|--------|
+| Only `positive` is down | `scale` |
+| Only `negative` is down | `-scale` |
+| Both keys are down | 0 |
+| No key is down | 0 |
+
+**Example**
+
+```lua
+if Keyboard.IsDown(Key.Space) then
+    print("Jump")
+end
+
+local speed = 300
+local move = Keyboard.Axis(Key.S, Key.W, speed)
+
+local fast = Keyboard.AnyDown(Key.LShift, Key.RShift)
+local save = Keyboard.AllDown(Key.LControl, Key.S)
+```
+
+### 7.4 Mouse
+
+A table of functions for the mouse. Use a dot to call each function. The functions `IsDown`, `IsUp`, `AnyDown`, `AllDown`, and `Axis` work as they do in `Keyboard`. They take names from `MouseButton`.
+
+| Function | Arguments | Returns | Description |
+|----------|-----------|---------|-------------|
+| `Mouse.IsDown(button)` | button | boolean | True if the button is held down. |
+| `Mouse.IsUp(button)` | button | boolean | True if the button is not held down. |
+| `Mouse.AnyDown(button, ...)` | one or more buttons | boolean | True if at least one of the buttons is held down. |
+| `Mouse.AllDown(button, ...)` | one or more buttons | boolean | True if all of the buttons are held down. |
+| `Mouse.Axis(negative, positive, scale)` | two buttons, optional number | number | Gives a direction value, as `Keyboard.Axis` does. |
+| `Mouse.Position()` | none | `vec2f` | The cursor position in window pixels. |
+| `Mouse.ScaledPosition(scale)` | `vec2f` | `vec2f` | The cursor position multiplied by `scale`. Each axis uses its own factor. |
+
+`Mouse.Position` and `Mouse.ScaledPosition` use the game window. You do not give a window.
+
+**NOTE**
+The cursor can be outside of the window. The position can then have a negative value, or a value larger than the window size.
+
+**Example**
+
+```lua
+if Mouse.IsDown(MouseButton.Left) then
+    local cursor = Mouse.Position()
+    print(cursor)
+end
+
+local half = Mouse.ScaledPosition(vec2f(0.5, 0.5))
+```
+
+---
+
+## 8. Entity Types
+
+### 8.1 Entity
 
 A game object. An entity holds components.
 
@@ -336,7 +452,7 @@ local comp = entity:GetComponent("Transform")
 
 The component names that are valid depend on the C++ component list.
 
-### 7.2 Entman (EntityManager)
+### 8.2 Entman (EntityManager)
 
 The entity manager. Lua cannot create this type.
 
@@ -388,7 +504,7 @@ Entman.AddRect("floor", world_id, vec2f(400, 580), vec2f(800, 40),
                ColorRGBA(80, 80, 80, 255), true, false)
 ```
 
-### 7.3 EntityFactory
+### 8.3 EntityFactory
 
 A set of functions that make entities. These functions do not add the entity to the entity manager.
 
@@ -415,7 +531,9 @@ The return type of `CreateCircleEntity` and `CreateRectEntity` comes from C++. I
 
 ---
 
-## 8. Complete Example
+## 9. Complete Examples
+
+### 9.1 Ground and walls
 
 This script makes the ground and two walls. It needs the globals `game_window` and `world_id`.
 
@@ -442,13 +560,37 @@ Entman.AddRect("RightWall", world_id,
                WHITE, STATIC_BODY, USE_METERS)
 ```
 
+### 9.2 Read the input
+
+This script reads the input for two players. It does not move an object, because no binding sets the velocity of a body.
+
+```lua
+local PADDLE_SPEED = 400
+
+local function read_input()
+    local left_move  = Keyboard.Axis(Key.S, Key.W, PADDLE_SPEED)
+    local right_move = Keyboard.Axis(Key.Down, Key.Up, PADDLE_SPEED)
+    local quit       = Keyboard.IsDown(Key.Escape)
+    local serve      = Keyboard.AnyDown(Key.Space, Key.Enter)
+    local click      = Mouse.IsDown(MouseButton.Left)
+
+    return left_move, right_move, quit, serve, click
+end
+```
+
+A function in C++ must call `read_input` each frame. The game does not have this call yet.
+
 ---
 
-## 9. Known Limits
+## 10. Known Limits
 
 - `Entman` has no Lua instance. Add one in C++ to use `MakeEntity` and `RemoveEntity`.
 - `b2WorldId` must be registered in a different place, and `world_id` must be set in C++.
 - `vec2`, `uvec2`, and `ColorRGB` have no operators. Only `vec2f` has operators.
+- The Lua `vec2f` has no `/` operator. The Lua `GameWindow` has no function for the window size. Because of this, a script cannot yet make the scale for `Mouse.ScaledPosition` from the window size and the game resolution.
+- The input functions read the state at the time of the call. There is no function that tells if a key went down in this frame. A script must keep the old state to find a change.
+- There is no Lua binding for a game loop, so no function calls a Lua `update` function each frame.
+- No binding sets the velocity or the position of a body.
 - `ColorRGB` and `ColorRGBA` have no `tostring` function.
 - `uvec2` values are unsigned. A negative value gives a wrong large number.
 - The comment "static: use a dot, not a colon" in `RegisterVec2f` is not correct. `pixelsToMeters` and `metersToPixels` take the vector as the first argument. Call them with a colon. A dot call also works if you pass the vector: `vec2f.pixelsToMeters(v)`.

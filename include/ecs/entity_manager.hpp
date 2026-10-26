@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include "core/list.hpp"
 #include "ecs/entity.hpp"
@@ -12,7 +13,7 @@ namespace sg::ECS {
         
         public:
             inline static List<sg::ECS::Entity> entman;
-            
+
             // Creates new entity and stores in entman
             // Returns pointer to newly created entity
             static Entity* MakeEntity(std::string name);

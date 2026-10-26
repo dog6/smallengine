@@ -11,6 +11,7 @@
 #include "graphics/shape_factory.hpp"
 #include "content/entity_factory.hpp"
 #include "scripting/lua_manager.hpp"
+#include "scripting/lua_toml.hpp"
 #include "core/smath.hpp"
 
 using namespace sg;
@@ -21,6 +22,8 @@ using namespace sg::ECS::Components;
 using namespace sg::Graphics;
 using namespace sg::Content;
 using namespace sg::Scripting;
+
+#define DELTA_TIME 1.0f/60.0f
 
 Game::Game()
 {
@@ -81,21 +84,9 @@ void Game::Load()
     WindowSettings* ws = this->settings.GetWindowSettings();
     Game::game_window = new GameWindow(ws);
 
-    // TEMP CODE
-
-    // Create person sized box
-    // b2Vec2 person_ref_size = b2Vec2{0.45, 1.75};
-    // b2Vec2 person_ref_pos = b2Vec2{20.0f, 20.0f};
-    // EntityManager::entman.Add(EntityFactory::CreateRectEntity("Person", PhysicsManager::world.worldId, person_ref_pos, person_ref_size,
-    //      sf::Color{255,80,140}, DYNAMIC_BODY, USE_METER_SCALE));
+    // Load multiple lua scripts specified inside a .TOML file
+    LuaManager::LoadFromTOML("D:/Projects/CPP/smallgame/res/scripts/configs/demo1.toml");
     
-
-    LuaManager::LoadFromPath("D:/Projects/CPP/smallgame/res/scripts/demo_1.lua");
-    LuaManager::LoadFromPath("D:/Projects/CPP/smallgame/res/scripts/wall_border.lua");
-
-    
-    
-    // END OF TEMP CODE
     game_window->renderer.clearBufferColor = sf::Color(32,32,32);
 
     spdlog::info("Game finished loading!");
@@ -116,8 +107,8 @@ void Game::Update()
     }
 
     EntityManager::entman.Update();
-
-    PhysicsManager::Update(1.0f/60.0f);
+    LuaManager::Update(DELTA_TIME);
+    PhysicsManager::Update(DELTA_TIME);
 }
 
 // Called on first game loop

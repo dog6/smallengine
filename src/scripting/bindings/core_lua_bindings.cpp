@@ -100,8 +100,4 @@ void CoreLuaBindings::Register(sol::state& lua)
     lua.new_usertype<b2WorldId>("b2WorldId", sol::no_constructor);
     lua["world_id"] = sg::Game::GetPhysics().world.worldId;
     lua["game_window"] = &sg::Game::GetInstance()->GetWindow();   // see the note below
-    // if (auto* game = sg::Game::GetInstance()) {
-    //     lua["game_world_id"] = game->GetB2WorldId();
-    // }
-
 }

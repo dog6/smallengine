@@ -1,17 +1,34 @@
 #include "core/game.hpp"
 #include <spdlog/spdlog.h>
 #include "scripting/lua_manager.hpp"
-
+#include "scripting/lua_toml.hpp"
 
 using namespace sg::Scripting;
 using namespace sg::Scripting::Bindings;
-
 using namespace sg::Core;
 
 void LuaManager::Load(LuaScript *script)
 {
     spdlog::info("LuaManager::Load(LuaScript) Loading lua script '{}'", script->filepath);
     LoadFromPath(script->filepath.c_str());
+}
+
+void sg::Scripting::LuaManager::LoadFromTOML(std::string config_path)
+{
+    if (config_path.empty())  {
+        spdlog::info("LuaTOML filepath passed is empty");
+        return;
+    }
+
+    spdlog::info("Loading scripts from LuaTOML '{}'..", config_path);
+    // Load lua scripts into s_scripts member using provided TOML path
+    LuaTOML lt = LuaTOML(config_path);
+
+    for (std::string path : lt.script_paths) {
+        LoadFromPath(path.c_str());
+        spdlog::info("LuaManager loaded script '{}' from LuaTOML '{}'", path, config_path);
+    }
+
 }
 
 std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
@@ -30,7 +47,7 @@ std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
 
     spdlog::info("Binding script '{}'..", script->filepath.c_str());
     BindToLua(script->lua);
-
+    // s_scripts.emplace_back(*script.get());
    
     try {
         auto result = script->lua.script_file(filepath);
@@ -48,25 +65,35 @@ std::unique_ptr<LuaScript> LuaManager::LoadFromPath(const char *filepath)
     return script; // The compiler moves it. Do not write std::move here.
 }
 
-void LuaManager::Update(float deltaTime, LuaScript &script)
+void LuaManager::Update(float deltaTime)
 {
-    sol::protected_function updateFunc = script.lua["OnUpdate"];
+    
+    if (s_scripts.size() <= 0) return;
+
+    for (auto& script : s_scripts){
+        auto s = script.get(); // get unique ptr reference
+
+        sol::protected_function updateFunc = s->lua["update"];
         if (updateFunc.valid()) {
             auto result = updateFunc(deltaTime);
             if (!result.valid()) {
                 sol::error err = result;
-                spdlog::error("Lua Update Error in '{}'\nERROR: {}", script.filepath, err.what());
+                spdlog::error("Lua Update Error in '{}'\nERROR: {}", s->filepath, err.what());
             }
         }
+    }
+
 
 }
 
 void LuaManager::BindToLua(sol::state &lua)
 {
+    // Add script to lua manager
     // Bind script to different engine modules
     ecs_lua_bindings.Register(lua);         // entity-component system - entity factory, entity manager, etc
     graphics_lua_bindings.Register(lua);    // graphics system - color, shape factory, etc
     core_lua_bindings.Register(lua);        // core systems - math, types, etc 
+    input_lua_bindings.Register(lua);       // user input - keyboard, mouse, etc
 }
 
 void LuaManager::Execute(std::string luaCode)

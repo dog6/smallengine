@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <box2d/box2d.h>
 
-#define PIXELS_PER_METER 42 // number of pixels per meter
+#define PIXELS_PER_METER 12 //42 // number of pixels per meter
 
 namespace sg::Core {
 
@@ -33,7 +33,13 @@ namespace sg::Core {
         b2Vec2 toBox2D();
         static vec2f pixelsToMeters(vec2f& v);
         static vec2f metersToPixels(vec2f& v);
+        vec2f operator*(float factor) const { return { x * factor, y * factor }; }
+        vec2f operator*(const vec2f& factor) const { return { x * factor.x, y * factor.y }; }
+        vec2f operator/(float divisor) const { return { x / divisor, y / divisor }; }
+        vec2f operator/(const vec2f& divisor) const { return { x / divisor.x, y / divisor.y }; }
     };
+    
+    inline vec2f operator*(float factor, const vec2f& v) { return v * factor; }
 
     // min and max are included
     int random_int(int min, int max);

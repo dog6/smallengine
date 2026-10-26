@@ -1,5 +1,6 @@
 #include "content/entity_factory.hpp"
 #include "core/smath.hpp"
+#include <spdlog/spdlog.h>
 
 using namespace sg::Content;
 using namespace sg::Core;
@@ -9,6 +10,7 @@ std::unique_ptr<Entity> sg::Content::EntityFactory::CreateCircleEntity(
     std::string name, b2WorldId worldId, vec2f pos, float radius, 
     sf::Color col, bool isStatic, bool useMeterScale)
 {
+    spdlog::info("Creating Circle entity '{}'", name);
     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
     b2Circle circle{};
@@ -37,6 +39,7 @@ std::unique_ptr<Entity> sg::Content::EntityFactory::CreateRectEntity(
     std::string name, b2WorldId worldId, vec2f pos, vec2f size, 
     sf::Color col, bool isStatic, bool useMeterScale) 
 {
+    spdlog::info("Creating Rectangle entity '{}'", name);
     std::unique_ptr<Entity> ent = std::make_unique<Entity>(name);
 
     b2Vec2 physics_pos;

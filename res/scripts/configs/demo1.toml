@@ -1,0 +1,5 @@
+[[scripts]]
+path = "D:/Projects/CPP/smallgame/res/scripts/pyramid_rain.lua"
+
+[[scripts]]
+path = "D:/Projects/CPP/smallgame/res/scripts/wall_border.lua"
